@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "CalificApp",
+    "slug": "CalificApp",
+    "version": "1.0.0",
+    "orientation": "landscape",
+    "icon": "./assets/CalificAppIcon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/CalificAppLogo2.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/CalificAppIcon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.samogir89.calificapp"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-secure-store"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "b67a783d-c235-49cd-a9a5-a2984aa58451"
+      }
+    }
+  }
+}
