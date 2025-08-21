@@ -31,53 +31,49 @@ const RatingScreen: React.FC = () => {
 
   return (
     <View style={gstyles.container}>
-      <View style={styles.employeeContainer}>
-        <Text style={gstyles.title}>{"Califica el servicio prestado por:"}</Text>
-        <View style={{ flexDirection: "row", alignItems: "center", width: "100%", position: "relative" }}>
-          <View style={{ flex: 1, alignItems: "center" }}>
-            <EmployeeCard ratingInfo={ratingInfo} imageSizeProportion={0.2} />
-          </View>
+      <View style={gstyles.fixedReturnButtonContainer}>
+        <View style={gstyles.shadowWrapper}>
           <Button
             mode="contained"
             onPress={handleBack}
             icon="arrow-left"
-            style={{
-              position: "absolute",
-              top: 0,
-              right: 0,
-              marginRight: 20,
-              backgroundColor: Colors.background,
-              borderColor: "black",
-              borderWidth: 1,
-            }}
-            labelStyle={{ color: "black" }}
+            style={gstyles.returnButton}
+            labelStyle={{ color: "black", fontSize: width * 0.0175 }}
           >
             {"Atrás"}
           </Button>
         </View>
       </View>
+      <View style={styles.employeeContainer}>
+        <Text style={gstyles.title}>{"Califica el servicio prestado por:"}</Text>
+        <View style={{ flexDirection: "row", alignItems: "center", width: "100%" }}>
+          <View style={{ flex: 1, alignItems: "center" }}>
+            <EmployeeCard ratingInfo={ratingInfo} imageSizeProportion={0.24} />
+          </View>
+        </View>
+      </View>
       <View style={styles.ratingScaleContainer}>
-        <TouchableOpacity onPress={() => handleRating(1)} style={{ marginHorizontal: 5 }}>
-          <Icon source="emoticon-angry" size={width * 0.075} color={Colors.rating1} />
+        <TouchableOpacity onPress={() => handleRating(1)} style={styles.ratingButton}>
+          <Icon source="emoticon-angry" size={width * 0.085} color={Colors.rating1} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleRating(2)} style={{ marginHorizontal: 5 }}>
-          <Icon source="emoticon-sad" size={width * 0.075} color={Colors.rating2} />
+        <TouchableOpacity onPress={() => handleRating(2)} style={styles.ratingButton}>
+          <Icon source="emoticon-sad" size={width * 0.085} color={Colors.rating2} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleRating(3)} style={{ marginHorizontal: 5 }}>
-          <Icon source="emoticon-neutral" size={width * 0.075} color={Colors.rating3} />
+        <TouchableOpacity onPress={() => handleRating(3)} style={styles.ratingButton}>
+          <Icon source="emoticon-neutral" size={width * 0.085} color={Colors.rating3} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleRating(4)} style={{ marginHorizontal: 5 }}>
-          <Icon source="emoticon-happy" size={width * 0.075} color={Colors.rating4} />
+        <TouchableOpacity onPress={() => handleRating(4)} style={styles.ratingButton}>
+          <Icon source="emoticon-happy" size={width * 0.085} color={Colors.rating4} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleRating(5)} style={{ marginHorizontal: 5 }}>
-          <Icon source="emoticon-excited" size={width * 0.075} color={Colors.rating5} />
+        <TouchableOpacity onPress={() => handleRating(5)} style={styles.ratingButton}>
+          <Icon source="emoticon-excited" size={width * 0.085} color={Colors.rating5} />
         </TouchableOpacity>
       </View>
       <View style={gstyles.fixedLogoContainer}>
         {ratingInfo.companyLogoUrl && (
           <Image
             source={{ uri: encodeURI(ratingInfo.companyLogoUrl) }} // update path as needed
-            style={{ width: 80, height: 80 }}
+            style={gstyles.logoImage}
             resizeMode="contain"
           />
         )}
@@ -95,6 +91,14 @@ const styles = StyleSheet.create({
   ratingScaleContainer: {
     flexDirection: "row",
     marginTop: 10,
+  },
+  ratingButton: {
+    marginHorizontal: width * 0.01,
+    backgroundColor: Colors.background, // Add background
+    borderRadius: 200, // Optional: make it round
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    elevation: 15, // Increase elevation for Android
   },
 });
 

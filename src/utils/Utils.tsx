@@ -37,14 +37,14 @@ export const getColorFromRating = (rating: number): string => {
 export const getIconFromRating = (rating: number): ReactElement => {
   switch (rating) {
     case 1:
-      return <Icon source="emoticon-angry" size={height * 0.1} color={Colors.rating1} />;
+      return <Icon source="emoticon-angry" size={height * 0.125} color={Colors.rating1} />;
     case 2:
-      return <Icon source="emoticon-sad" size={height * 0.1} color={Colors.rating2} />;
+      return <Icon source="emoticon-sad" size={height * 0.125} color={Colors.rating2} />;
     case 3:
-      return <Icon source="emoticon-neutral" size={height * 0.1} color={Colors.rating3} />;
+      return <Icon source="emoticon-neutral" size={height * 0.125} color={Colors.rating3} />;
     case 4:
-      return <Icon source="emoticon-happy" size={height * 0.1} color={Colors.rating4} />;
+      return <Icon source="emoticon-happy" size={height * 0.125} color={Colors.rating4} />;
     case 5:
-      return <Icon source="emoticon-excited" size={height * 0.1} color={Colors.rating5} />;
+      return <Icon source="emoticon-excited" size={height * 0.125} color={Colors.rating5} />;
   }
 };

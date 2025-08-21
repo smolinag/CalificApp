@@ -2,25 +2,26 @@ import { useState } from "react";
 import { RatingInfo } from "../models/RatingInfo";
 import { ConfigProperties } from "../utils/ConfigProperties";
 import { TouchableOpacity, View, Image, Text, StyleSheet } from "react-native";
-import { width } from "../styles/GeneralStyle";
+import gstyles, { width } from "../styles/GeneralStyle";
 import { Colors } from "../styles/Theme";
 
 const NAME_LIMIT = 60;
 
-const EmployeeCard: React.FC<{ ratingInfo: RatingInfo; onPress?: () => void; imageSizeProportion?: number }> = ({
-  ratingInfo,
-  onPress,
-  imageSizeProportion = 0.13,
-}) => {
+const EmployeeCard: React.FC<{
+  ratingInfo: RatingInfo;
+  onPress?: () => void;
+  imageSizeProportion?: number;
+  isTouchable?: boolean;
+}> = ({ ratingInfo, onPress, imageSizeProportion = 0.15, isTouchable = false }) => {
   const [imageError, setImageError] = useState(false);
 
   const finalUri = encodeURI(
     `${ConfigProperties.s3BucketUrl.replace(/\/$/, "")}/${ratingInfo.photoSource.replace(/^\//, "")}`
   );
 
-  return (
-    <TouchableOpacity onPress={onPress}>
-      <View style={styles.employeeContainer}>
+  const displayEmployee = () => {
+    return (
+      <View style={[styles.employeeContainer, isTouchable && gstyles.shadowWrapper]}>
         <Image
           source={imageError ? require("../../assets/Unknown.jpg") : { uri: finalUri }}
           style={[styles.image, { width: width * imageSizeProportion, height: width * imageSizeProportion }]}
@@ -30,8 +31,14 @@ const EmployeeCard: React.FC<{ ratingInfo: RatingInfo; onPress?: () => void; ima
           {ratingInfo.employeeName.slice(0, NAME_LIMIT)}
         </Text>
       </View>
-    </TouchableOpacity>
-  );
+    );
+  };
+
+  if (isTouchable) {
+    return <TouchableOpacity onPress={onPress}>{displayEmployee()}</TouchableOpacity>;
+  } else {
+    return displayEmployee();
+  }
 };
 
 const styles = StyleSheet.create({
@@ -40,15 +47,15 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "center",
     alignItems: "center",
-    marginHorizontal: 20,
-    marginVertical: 2,
+    marginHorizontal: width * 0.012,
     backgroundColor: Colors.board,
-    padding: 5,
+    padding: width * 0.01,
     borderRadius: 10,
+    marginVertical: width * 0.01,
   },
   image: {
-    margin: 4,
     borderRadius: 8,
+    marginBottom: 5,
   },
 });
 

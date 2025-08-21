@@ -7,13 +7,13 @@ import * as SecureStore from "expo-secure-store";
 
 import { getEmployees } from "../queries/EmployeeQueries";
 import EmployeeCard from "../components/EmployeeCard";
-import gstyles from "../styles/GeneralStyle";
+import gstyles, { width } from "../styles/GeneralStyle";
 import { RatingInfo } from "../models/RatingInfo";
-import { Colors } from "../styles/Theme";
 import { ConfigProperties } from "../utils/ConfigProperties";
+import { Colors } from "../styles/Theme";
 
 const NUM_ROWS = 2;
-const NUM_COLS = 3;
+const NUM_COLS = 4;
 
 const PhotoSelectionScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
@@ -22,22 +22,22 @@ const PhotoSelectionScreen: React.FC = () => {
   const [logoUrl, setLogoUrl] = useState<string>("");
 
   const fetchEmployees = async () => {
-      const companyName = await SecureStore.getItemAsync("companyName");
-      const logoUrl = `${ConfigProperties.s3BucketUrl.replace(/\/$/, "")}/${companyName}/logo.png`;
-      setLogoUrl(logoUrl);
-      const response = await getEmployees(companyName);
-      if (response && response.data) {
-        const employeeData: RatingInfo[] = response.data.map((employee: any) => ({
-          employeeName: employee.employeeName,
-          photoSource: employee.photoUrl,
-          ratingStartedAt: undefined,
-          companyLogoUrl: logoUrl
-        }));
-        setEmployees(employeeData);
-      } else {
-        console.error("Failed to fetch employees");
-      }
-    };
+    const companyName = await SecureStore.getItemAsync("companyName");
+    const logoUrl = `${ConfigProperties.s3BucketUrl.replace(/\/$/, "")}/${companyName}/logo.png`;
+    setLogoUrl(logoUrl);
+    const response = await getEmployees(companyName);
+    if (response && response.data) {
+      const employeeData: RatingInfo[] = response.data.map((employee: any) => ({
+        employeeName: employee.employeeName,
+        photoSource: employee.photoUrl,
+        ratingStartedAt: undefined,
+        companyLogoUrl: logoUrl,
+      }));
+      setEmployees(employeeData);
+    } else {
+      console.error("Failed to fetch employees");
+    }
+  };
 
   useEffect(() => {
     const checkConfiguration = async () => {
@@ -57,6 +57,7 @@ const PhotoSelectionScreen: React.FC = () => {
       <FlatList
         data={employees.slice(page * NUM_ROWS * NUM_COLS, (page + 1) * NUM_ROWS * NUM_COLS)}
         keyExtractor={(_, index) => index.toString()}
+        key={NUM_COLS}
         numColumns={NUM_COLS}
         contentContainerStyle={{
           flexGrow: 1,
@@ -70,6 +71,7 @@ const PhotoSelectionScreen: React.FC = () => {
               item.ratingStartedAt = new Date().getTime();
               navigation.navigate("Rating", { ratingInfo: item });
             }}
+            isTouchable={true}
           />
         )}
       />
@@ -82,20 +84,24 @@ const PhotoSelectionScreen: React.FC = () => {
       <View style={styles.carouselContainer}>
         <View style={styles.navigationIcon}>
           {page > 0 && (
-            <TouchableOpacity onPress={() => setPage(page - 1)}>
-              <Icon source="chevron-left" size={50} />
-            </TouchableOpacity>
+            <View style={styles.navigationIconShadow}>
+              <TouchableOpacity onPress={() => setPage(page - 1)}>
+                <Icon source="chevron-left" size={60} />
+              </TouchableOpacity>
+            </View>
           )}
         </View>
-        <View style={[styles.gridContainer, { backgroundColor: Colors.board }]}>
+        <View style={styles.gridContainer}>
           <Text style={gstyles.subtitle}>{"Selecciona a la persona que te atendió:"}</Text>
           {displayEmployees()}
         </View>
         <View style={styles.navigationIcon}>
           {page < Math.ceil(employees.length / (NUM_ROWS * NUM_COLS)) - 1 && (
-            <TouchableOpacity onPress={() => setPage(page + 1)}>
-              <Icon source="chevron-right" size={50} />
-            </TouchableOpacity>
+            <View style={styles.navigationIconShadow}>
+              <TouchableOpacity onPress={() => setPage(page + 1)}>
+                <Icon source="chevron-right" size={60} />
+              </TouchableOpacity>
+            </View>
           )}
         </View>
       </View>
@@ -103,7 +109,7 @@ const PhotoSelectionScreen: React.FC = () => {
         {logoUrl && (
           <Image
             source={{ uri: encodeURI(logoUrl) }} // update path as needed
-            style={{ width: 80, height: 80 }}
+            style={gstyles.logoImage}
             resizeMode="contain"
             onError={() => setLogoUrl("")}
           />
@@ -121,17 +127,29 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   gridContainer: {
-    width: "70%",
+    width: "85%",
+    height: "90%",
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "column",
     alignContent: "center",
     borderRadius: 15,
-    color: Colors.board,
   },
   navigationIcon: {
-    width: 50,
+    width: 60,
+    height: 60,
     marginHorizontal: 10,
+  },
+  navigationIconShadow: {
+    width: 60,
+    height: 60, // Make it square for better shadow
+    backgroundColor: Colors.background, // Visible background for shadow
+    borderRadius: 30,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 8, // Android shadow
   },
 });
 
