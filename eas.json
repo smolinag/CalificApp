@@ -7,7 +7,7 @@
       "developmentClient": true,
       "distribution": "internal",
       "android": {
-        "image": "latest"
+        "image": "ubuntu-22-node-20"
       },
       "env": {
         "NODE_VERSION": "20.19.4"
