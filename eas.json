@@ -6,9 +6,6 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "android": {
-        "image": "ubuntu-22.04-jdk-17-ndk-r26b"
-      },
       "env": {
         "NODE_VERSION": "20.19.4"
       }
