@@ -5,7 +5,13 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "android": {
+        "image": "latest"
+      },
+      "env": {
+        "NODE_VERSION": "22.18.0"
+      }
     },
     "preview": {
       "distribution": "internal"

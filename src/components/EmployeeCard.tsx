@@ -5,7 +5,7 @@ import { TouchableOpacity, View, Image, Text, StyleSheet } from "react-native";
 import gstyles, { width } from "../styles/GeneralStyle";
 import { Colors } from "../styles/Theme";
 
-const NAME_LIMIT = 60;
+const NAME_LIMIT = 28;
 
 const EmployeeCard: React.FC<{
   ratingInfo: RatingInfo;

@@ -138,7 +138,7 @@ const CommentsScreen: React.FC = () => {
           )}
 
           <Modal visible={modalVisible} transparent={true} animationType="fade">
-            <View style={styles.modalOverlay}>
+            <View style={gstyles.modalOverlay}>
               <View style={[styles.alertContainer, { backgroundColor: Colors.background }]}>
                 <Icon
                   source={ratingPostStatus === "Success" ? "check-circle-outline" : "close-circle-outline"}
@@ -180,13 +180,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
+  },  
   alertContainer: {
     width: 300,
     padding: 15,
