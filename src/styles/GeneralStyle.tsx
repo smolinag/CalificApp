@@ -19,6 +19,9 @@ const gstyles = StyleSheet.create({
   text: {
     fontSize: 0.015 * width,
   },
+  textInput:{
+    fontSize: 0.015 * width,
+  },
   container: {
     flex: 1,
     flexDirection: "column",
@@ -60,8 +63,15 @@ const gstyles = StyleSheet.create({
   },
   generalButton: {
     height: height * 0.075,
-    width: width * 0.15,
+    width: width * 0.145,
     justifyContent: "center",
+    margin: 5
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   }
 });
 

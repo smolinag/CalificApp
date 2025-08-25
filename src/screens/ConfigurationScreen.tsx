@@ -1,62 +1,97 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { TextInput, Button, Icon } from "react-native-paper";
-import gstyles from "../styles/GeneralStyle";
+import React from "react";
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, NativeModules } from "react-native";
+import { Button, Icon } from "react-native-paper";
+import gstyles, { width } from "../styles/GeneralStyle";
+import * as SecureStore from "expo-secure-store";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import * as SecureStore from "expo-secure-store";
+const { KioskMode } = NativeModules;
 
 const ConfigurationScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
-  const [companyName, setCompanyName] = useState("");
-  const [deviceId, setDeviceId] = useState("");
-
-  const handleSubmit = async () => {
-    if(companyName !== "" && deviceId !== "") {
-      await saveConfiguration(companyName, deviceId);
-      navigation.navigate("Home");
-    }
+  const handleExitFullScreen = async () => {
+    KioskMode.exit();
   };
 
-  const saveConfiguration = async (companyName: string, deviceId: string) => {
-    await SecureStore.setItemAsync("companyName", companyName);
-    await SecureStore.setItemAsync("deviceId", deviceId);
+  const handleEnterFullScreen = async () => {
+    KioskMode.enter();
+  };
+
+  const handleResetApp = async () => {
+    await SecureStore.deleteItemAsync("companyName");
+    await SecureStore.deleteItemAsync("deviceId");
+    await SecureStore.deleteItemAsync("pin");
+    // Navigate to InitialConfigurationScreen
+    navigation.navigate("InitConfiguration");
+  };
+
+  const handleBack = () => {
+    navigation.goBack();
   };
 
   return (
-    <View style={gstyles.container}>
-      <View style={styles.mainContainer}>
-        <View style={{ flexDirection: "column", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
-          <Text style={gstyles.title}>{"Configuración Inicial"}</Text>
-          <Icon source="cog" size={40} color="#000" />
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={0} // adjust as needed for your header
+    >
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <View style={gstyles.container}>
+          <View style={styles.mainContainer}>
+            <View style={gstyles.fixedReturnButtonContainer}>
+              <View style={gstyles.shadowWrapper}>
+                <Button
+                  mode="contained"
+                  onPress={handleBack}
+                  icon="arrow-left"
+                  style={gstyles.returnButton}
+                  labelStyle={{ color: "black", fontSize: width * 0.0175 }}
+                >
+                  {"Atrás"}
+                </Button>
+              </View>
+            </View>
+            <View
+              style={{ flexDirection: "column", justifyContent: "space-between", alignItems: "center", width: "100%" }}
+            >
+              <Text style={gstyles.title}>{"Configuración"}</Text>
+              <Icon source="cog" size={40} color="#000" />
+            </View>
+            <Button
+              mode="contained"
+              onPress={() => {
+                handleExitFullScreen();
+              }}
+              style={[gstyles.generalButton, { marginTop: 10 }]}
+              labelStyle={{ fontSize: width * 0.0175 }}
+            >
+              {"Exit fullScreen"}
+            </Button>
+            <Button
+              mode="contained"
+              onPress={() => {
+                handleEnterFullScreen();
+              }}
+              style={[gstyles.generalButton, { marginTop: 10 }]}
+              labelStyle={{ fontSize: width * 0.0175 }}
+            >
+              {"Enter fullScreen"}
+            </Button>
+            <Button
+              mode="contained"
+              onPress={() => {
+                handleResetApp();
+              }}
+              style={[gstyles.generalButton, { marginTop: 10 }]}
+              labelStyle={{ fontSize: width * 0.0175 }}
+            >
+              {"Reset App"}
+            </Button>
+          </View>
         </View>
-        <TextInput
-          mode="outlined"
-          label="Ingresa el nombre de la empresa"
-          style={{ width: "90%", marginVertical: 5 }}
-          value={companyName}
-          onChangeText={setCompanyName}
-        />
-        <TextInput
-          mode="outlined"
-          label="Ingresa el ID del dispositivo"
-          style={{ width: "90%", marginVertical: 5 }}
-          value={deviceId}
-          onChangeText={setDeviceId}
-        />
-        <Button
-          mode="contained"
-          onPress={() => {
-            handleSubmit();
-          }}
-          style={{ marginTop: 10 }}
-          disabled={!companyName || !deviceId}
-        >
-          {"Continuar"}
-        </Button>
-      </View>
-    </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -66,7 +101,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
-  }
+  },
 });
 
 export default ConfigurationScreen;
