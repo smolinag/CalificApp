@@ -45,7 +45,7 @@ const gstyles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 20,
     elevation: 10, // Android
-    borderRadius: 10, // Optional: match button radius
+    borderRadius: 20, // Optional: match button radius
   },
   fixedReturnButtonContainer: {
     position: "absolute",

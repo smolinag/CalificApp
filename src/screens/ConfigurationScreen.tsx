@@ -1,22 +1,13 @@
 import React from "react";
-import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, NativeModules } from "react-native";
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { Button, Icon } from "react-native-paper";
 import gstyles, { width } from "../styles/GeneralStyle";
 import * as SecureStore from "expo-secure-store";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-const { KioskMode } = NativeModules;
 
 const ConfigurationScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
-
-  const handleExitFullScreen = async () => {
-    KioskMode.exit();
-  };
-
-  const handleEnterFullScreen = async () => {
-    KioskMode.enter();
-  };
 
   const handleResetApp = async () => {
     await SecureStore.deleteItemAsync("companyName");
@@ -58,26 +49,6 @@ const ConfigurationScreen: React.FC = () => {
               <Text style={gstyles.title}>{"Configuración"}</Text>
               <Icon source="cog" size={40} color="#000" />
             </View>
-            <Button
-              mode="contained"
-              onPress={() => {
-                handleExitFullScreen();
-              }}
-              style={[gstyles.generalButton, { marginTop: 10 }]}
-              labelStyle={{ fontSize: width * 0.0175 }}
-            >
-              {"Exit fullScreen"}
-            </Button>
-            <Button
-              mode="contained"
-              onPress={() => {
-                handleEnterFullScreen();
-              }}
-              style={[gstyles.generalButton, { marginTop: 10 }]}
-              labelStyle={{ fontSize: width * 0.0175 }}
-            >
-              {"Enter fullScreen"}
-            </Button>
             <Button
               mode="contained"
               onPress={() => {

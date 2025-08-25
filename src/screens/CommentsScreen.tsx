@@ -124,16 +124,18 @@ const CommentsScreen: React.FC = () => {
                 value={comments}
                 onChangeText={setComments}
               />
-              <Button
-                mode="contained"
-                onPress={() => {
-                  handleSubmit();
-                }}
-                style={[gstyles.generalButton, { marginTop: 10 }]}
-                labelStyle={{ fontSize: width * 0.0175 }}
-              >
-                {"Finalizar"}
-              </Button>
+              <View style={gstyles.shadowWrapper}>
+                <Button
+                  mode="contained"
+                  onPress={() => {
+                    handleSubmit();
+                  }}
+                  style={[gstyles.generalButton, { marginTop: 10 }]}
+                  labelStyle={{ fontSize: width * 0.0175 }}
+                >
+                  {"Finalizar"}
+                </Button>
+              </View>
             </View>
           )}
 
