@@ -3,8 +3,9 @@ import { createStackNavigator } from "@react-navigation/stack";
 import PhotoSelectionScreen from "../screens/PhotoSelectionScreen";
 import RatingScreen from "../screens/RatingScreen";
 import CommentsScreen from "../screens/CommentsScreen";
-import ConfigurationScreen from "../screens/ConfigurationScreen";
+import ConfigurationScreen from "../screens/admin/ConfigurationScreen";
 import InitialConfigurationScreen from "../screens/InitialConfigurationScreen";
+import RatingsScreen from "../screens/admin/RatingsScreen";
 
 const Stack = createStackNavigator();
 
@@ -18,7 +19,8 @@ const AppNavigator: React.FC = () => {
       <Stack.Screen name="Rating" component={RatingScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Comments" component={CommentsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Configuration" component={ConfigurationScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="InitConfiguration" component={InitialConfigurationScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="InitialConfiguration" component={InitialConfigurationScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Ratings" component={RatingsScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 };

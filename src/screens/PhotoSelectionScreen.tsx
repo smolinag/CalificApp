@@ -33,7 +33,7 @@ const PhotoSelectionScreen: React.FC = () => {
     if (response && response.data) {
       const employeeData: RatingInfo[] = response.data.map((employee: any) => ({
         employeeName: employee.employeeName,
-        photoSource: employee.photoUrl,
+        photoUrl: employee.photoUrl,
         ratingStartedAt: undefined,
         companyLogoUrl: logoUrl,
       }));
@@ -52,7 +52,7 @@ const PhotoSelectionScreen: React.FC = () => {
       const deviceId = await SecureStore.getItemAsync("deviceId");
       const pin = await SecureStore.getItemAsync("pin");
       if (!companyName || !deviceId || !pin) {
-        navigation.navigate("Configuration");
+        navigation.navigate("InitialConfiguration");
       } else {
         await fetchEmployees();
       }
@@ -168,7 +168,7 @@ const PhotoSelectionScreen: React.FC = () => {
             <TextInput
               mode="outlined"
               keyboardType="numeric"
-              style={{ width: "90%", marginVertical: 5, fontSize: 25 }}
+              style={{ width: "90%", marginVertical: 5, fontSize: gstyles.subtitle2.fontSize }}
               value={inputPassword}
               onChangeText={(text) => {
                 // Only allow up to 4 digits and numeric input
@@ -183,7 +183,7 @@ const PhotoSelectionScreen: React.FC = () => {
                   setModalVisible(false);
                 }}
                 style={[gstyles.generalButton, { marginTop: 10 }]}
-                labelStyle={{ fontSize: width * 0.0175 }}
+                labelStyle={{ fontSize: gstyles.textInput.fontSize }}
               >
                 {"Cancelar"}
               </Button>
@@ -193,7 +193,7 @@ const PhotoSelectionScreen: React.FC = () => {
                   handlePasswordSubmit();
                 }}
                 style={[gstyles.generalButton, { marginTop: 10 }]}
-                labelStyle={{ fontSize: width * 0.0175 }}
+                labelStyle={{ fontSize: gstyles.textInput.fontSize }}
               >
                 {"Aceptar"}
               </Button>
@@ -214,7 +214,6 @@ const styles = StyleSheet.create({
   },
   gridContainer: {
     width: "85%",
-    height: "90%",
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "column",

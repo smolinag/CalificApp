@@ -1,5 +1,5 @@
 export interface RatingInfo {
-  photoSource: string;
+  photoUrl: string;
   employeeName: string;
   rating?: number;
   comments?: string;

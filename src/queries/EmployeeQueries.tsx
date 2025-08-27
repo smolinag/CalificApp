@@ -1,11 +1,11 @@
 import axios, { AxiosResponse } from "axios";
 import { ConfigProperties } from "../utils/ConfigProperties";
 
-const employees = "/employees";
+const employeesPath = "/employees";
 
 export const getEmployees = async (companyName: string): Promise<AxiosResponse | null> => {
   try {
-    const response = await axios.get(ConfigProperties.serverUrl + employees, {
+    const response = await axios.get(ConfigProperties.serverUrl + employeesPath, {
       params: { id: companyName },
     });
     return response;

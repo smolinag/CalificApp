@@ -38,7 +38,7 @@ const RatingScreen: React.FC = () => {
             onPress={handleBack}
             icon="arrow-left"
             style={gstyles.returnButton}
-            labelStyle={{ color: "black", fontSize: width * 0.0175 }}
+            labelStyle={{ color: "black", fontSize: gstyles.subtitle2.fontSize }}
           >
             {"Atrás"}
           </Button>
@@ -48,7 +48,7 @@ const RatingScreen: React.FC = () => {
         <Text style={gstyles.title}>{"Califica el servicio prestado por:"}</Text>
         <View style={{ flexDirection: "row", alignItems: "center", width: "100%" }}>
           <View style={{ flex: 1, alignItems: "center" }}>
-            <EmployeeCard ratingInfo={ratingInfo} imageSizeProportion={0.24} />
+            <EmployeeCard ratingInfo={ratingInfo} imageSizeProportion={0.3} />
           </View>
         </View>
       </View>

@@ -5,7 +5,7 @@ import * as SecureStore from "expo-secure-store";
 import { ParamListBase, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-import gstyles, { width } from "../styles/GeneralStyle";
+import gstyles, { height, width } from "../styles/GeneralStyle";
 import { RatingInfo } from "../models/RatingInfo";
 import { Colors } from "../styles/Theme";
 import LoadingAnimation from "../components/LoadingAnimation";
@@ -78,23 +78,23 @@ const CommentsScreen: React.FC = () => {
     >
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={gstyles.container}>
+          <View style={gstyles.fixedReturnButtonContainer}>
+            <View style={gstyles.shadowWrapper}>
+              <Button
+                mode="contained"
+                onPress={handleBack}
+                icon="arrow-left"
+                style={gstyles.returnButton}
+                labelStyle={{ color: "black", fontSize: gstyles.subtitle2.fontSize }}
+              >
+                {"Atrás"}
+              </Button>
+            </View>
+          </View>
           {loading ? (
             <LoadingAnimation message="Enviando calificación..." />
           ) : (
             <View style={styles.mainContainer}>
-              <View style={gstyles.fixedReturnButtonContainer}>
-                <View style={gstyles.shadowWrapper}>
-                  <Button
-                    mode="contained"
-                    onPress={handleBack}
-                    icon="arrow-left"
-                    style={gstyles.returnButton}
-                    labelStyle={{ color: "black", fontSize: width * 0.0175 }}
-                  >
-                    {"Atrás"}
-                  </Button>
-                </View>
-              </View>
               <View
                 style={{
                   flexDirection: "column",
@@ -111,7 +111,7 @@ const CommentsScreen: React.FC = () => {
               <TextInput
                 mode="outlined"
                 label="Escribe tu nombre"
-                style={{ width: "90%", marginVertical: 5, fontSize: 25 }}
+                style={{ width: "90%", marginVertical: 5, fontSize: gstyles.textInput.fontSize }}
                 value={raterName}
                 onChangeText={setRaterName}
               />
@@ -120,7 +120,7 @@ const CommentsScreen: React.FC = () => {
                 label="Escribe tu comentario aquí..."
                 multiline
                 numberOfLines={4}
-                style={{ width: "90%", marginVertical: 5, height: 120, fontSize: 25 }}
+                style={{ width: "90%", marginVertical: 5, height: height * 0.275, fontSize: gstyles.textInput.fontSize }}
                 value={comments}
                 onChangeText={setComments}
               />

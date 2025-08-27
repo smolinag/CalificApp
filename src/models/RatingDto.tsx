@@ -7,4 +7,5 @@ export interface RatingDto {
   date: string;
   raterName: string;
   ratingTimeMs?: number;
+  createdAt?: string;
 };

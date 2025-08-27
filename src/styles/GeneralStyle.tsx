@@ -5,22 +5,26 @@ export const { width, height } = Dimensions.get("window");
 
 const gstyles = StyleSheet.create({
   title: {
-    fontSize: 0.03 * width,
+    fontSize: 0.05 * height,
     fontWeight: "bold",
-    textAlign: "center",
-    marginVertical: 0.015 * height,
-  },
-  subtitle: {
-    fontSize: 0.0225 * width,
-    fontWeight: "normal",
     textAlign: "center",
     marginVertical: 0.01 * height,
   },
+  subtitle: {
+    fontSize: 0.035 * height,
+    fontWeight: "normal",
+    textAlign: "center",
+  },
+  subtitle2: {
+    fontSize: 0.028 * height,
+    fontWeight: "normal",
+    textAlign: "center",
+  },
   text: {
-    fontSize: 0.015 * width,
+    fontSize: 0.025 * height,
   },
   textInput:{
-    fontSize: 0.015 * width,
+    fontSize: 0.03 * height,
   },
   container: {
     flex: 1,
@@ -32,7 +36,7 @@ const gstyles = StyleSheet.create({
   },
   fixedLogoContainer: {
     position: "absolute",
-    bottom: 60,
+    bottom: height * 0.05,
     right: 10,
     zIndex: 10,
   },
@@ -49,23 +53,23 @@ const gstyles = StyleSheet.create({
   },
   fixedReturnButtonContainer: {
     position: "absolute",
-    top: 80,
-    right: 40,
+    top: height * 0.075,
+    right: width * 0.02,
     zIndex: 10,
   },
   returnButton: {
     backgroundColor: Colors.background,
     borderColor: "black",
     borderWidth: 1,
-    height: height * 0.075,
-    width: width * 0.1,
+    alignSelf: "flex-start",
     justifyContent: "center",
   },
   generalButton: {
-    height: height * 0.075,
-    width: width * 0.145,
+    alignSelf: "flex-start",
     justifyContent: "center",
-    margin: 5
+    margin: 5,
+    paddingHorizontal: "1%",
+    paddingVertical: "1%",
   },
   modalOverlay: {
     flex: 1,
