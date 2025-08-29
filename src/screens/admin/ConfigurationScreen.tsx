@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Modal } from "react-native";
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { Button, Icon } from "react-native-paper";
 import gstyles, { width } from "../../styles/GeneralStyle";
 import * as SecureStore from "expo-secure-store";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import Constants from "expo-constants";
-import { Colors } from "../../styles/Theme";
+import GeneralStatusModal from "../../components/GeneralStatusModal";
 
 const ConfigurationScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
@@ -29,6 +29,10 @@ const ConfigurationScreen: React.FC = () => {
 
   const handleShowRatings = () => {
     navigation.navigate("Ratings");
+  };
+
+  const handleShowEmployees = () => {
+    navigation.navigate("Employees");
   };
 
   const handleBack = () => {
@@ -78,6 +82,18 @@ const ConfigurationScreen: React.FC = () => {
                 <Button
                   mode="contained"
                   onPress={() => {
+                    handleShowEmployees();
+                  }}
+                  style={[gstyles.generalButton, { marginTop: 10 }]}
+                  labelStyle={{ fontSize: width * 0.0175 }}
+                >
+                  {"Empleados"}
+                </Button>
+              </View>
+              <View style={gstyles.shadowWrapper}>
+                <Button
+                  mode="contained"
+                  onPress={() => {
                     handleResetApp();
                   }}
                   style={[gstyles.generalButton, { marginTop: 10 }]}
@@ -89,43 +105,18 @@ const ConfigurationScreen: React.FC = () => {
               <Text style={gstyles.text}>{"Versión: " + appVersion}</Text>
             </View>
           </View>
-          <Modal visible={showResetModal} transparent={true} animationType="fade">
-            <View style={gstyles.modalOverlay}>
-              <View style={[styles.alertContainer, { backgroundColor: Colors.background }]}>
-                <Icon source={"alert-outline"} size={width * 0.035} />
-                <View style={{ marginVertical: 10, alignItems: "flex-start" }}>
-                  <Text style={gstyles.text}>
-                    {
-                      "Estás a punto de reiniciar la configuración de la aplicación. Esto borrará todos los datos guardados localmente y te llevará a la pantalla de configuración inicial. ¿Deseas continuar?"
-                    }
-                  </Text>
-                </View>
-
-                <View style={{ flexDirection: "row" }}>
-                  <Button
-                    mode="contained"
-                    onPress={() => {
-                      setShowResetModal(false);
-                    }}
-                    style={[gstyles.generalButton, { marginTop: 10 }]}
-                    labelStyle={{ fontSize: width * 0.0175 }}
-                  >
-                    {"Cancelar"}
-                  </Button>
-                  <Button
-                    mode="contained"
-                    onPress={() => {
-                      handleResetAppAccept();
-                    }}
-                    style={[gstyles.generalButton, { marginTop: 10 }]}
-                    labelStyle={{ fontSize: width * 0.0175 }}
-                  >
-                    {"Aceptar"}
-                  </Button>
-                </View>
-              </View>
-            </View>
-          </Modal>
+          <GeneralStatusModal
+            isVisible={showResetModal}
+            message={
+              "Estás a punto de reiniciar la configuración de la aplicación. Esto borrará todos los datos guardados localmente y te llevará a la pantalla de configuración inicial. ¿Deseas continuar?"
+            }
+            button1Text="Aceptar"
+            button2Text="Cancelar"
+            onPress1={handleResetAppAccept}
+            onPress2={() => setShowResetModal(false)}
+            status="warning"
+            widthProportion={0.4}
+          />          
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

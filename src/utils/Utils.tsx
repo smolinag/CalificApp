@@ -60,3 +60,29 @@ export const formatLocalDateTime = (dateString: string): string => {
   const MM = pad(date.getMinutes());
   return `${yyyy}-${mm}-${dd} ${HH}:${MM}`;
 };
+
+export const getMonthsForDropdown = (): { label: string; value: number }[] => {
+  return [
+    { label: "Enero", value: 1 },
+    { label: "Febrero", value: 2 },
+    { label: "Marzo", value: 3 },
+    { label: "Abril", value: 4 },
+    { label: "Mayo", value: 5 },
+    { label: "Junio", value: 6 },
+    { label: "Julio", value: 7 },
+    { label: "Agosto", value: 8 },
+    { label: "Septiembre", value: 9 },
+    { label: "Octubre", value: 10 },
+    { label: "Noviembre", value: 11 },
+    { label: "Diciembre", value: 12 },
+  ];
+}
+
+export const getYearsForDropdown = (): { label: string; value: number }[] => {
+  const currentYear = new Date().getFullYear();
+  const years = [];
+  for (let year = 2025; year <= currentYear; year++) {
+    years.push({ label: year.toString(), value: year });
+  }
+  return years;
+}

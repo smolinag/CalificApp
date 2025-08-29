@@ -31,7 +31,7 @@ const gstyles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    padding: 0.025 * width,
+    padding: 0.035 * height,
     backgroundColor: Colors.background,
   },
   fixedLogoContainer: {
@@ -67,15 +67,28 @@ const gstyles = StyleSheet.create({
   generalButton: {
     alignSelf: "flex-start",
     justifyContent: "center",
-    margin: 5,
+    margin: height * 0.01,
     paddingHorizontal: "1%",
-    paddingVertical: "1%",
+    paddingVertical: "0.2%",
   },
   modalOverlay: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  roundButtonShadow: {
+    width: 60,
+    height: 60, // Make it square for better shadow
+    backgroundColor: Colors.background, // Visible background for shadow
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 30,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 8, // Android shadow
   }
 });
 

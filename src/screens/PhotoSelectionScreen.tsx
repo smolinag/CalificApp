@@ -12,17 +12,16 @@ import { RatingInfo } from "../models/RatingInfo";
 import { ConfigProperties } from "../utils/ConfigProperties";
 import { Colors } from "../styles/Theme";
 import LoadingAnimation from "../components/LoadingAnimation";
+import EmployeeCarousel from "../components/EmployeeCarousel";
 
 const PhotoSelectionScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const [employees, setEmployees] = useState<RatingInfo[]>([]);
-  const [page, setPage] = useState(0);
   const [logoUrl, setLogoUrl] = useState<string>("");
-  const [numCols, setNumCols] = useState(0);
-  const [numRows, setNumRows] = useState(0);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [inputPassword, setInputPassword] = useState("");
+  const [pinError, setPinError] = useState(false);
 
   const fetchEmployees = async () => {
     const companyName = await SecureStore.getItemAsync("companyName");
@@ -39,7 +38,6 @@ const PhotoSelectionScreen: React.FC = () => {
       }));
       console.log("Fetched employees: " + employeeData.length);
       setEmployees(employeeData);
-      calculateRowsAndColumns(employeeData.length);
       setLoading(false);
     } else {
       console.error("Failed to fetch employees");
@@ -60,63 +58,29 @@ const PhotoSelectionScreen: React.FC = () => {
     checkConfiguration();
   }, []);
 
-  const calculateRowsAndColumns = (numElements: number) => {
-    if (numElements === 0) {
-      setNumRows(0);
-      setNumCols(0);
-    } else if (numElements <= 4) {
-      setNumRows(1);
-      setNumCols(numElements);
-    } else if (numElements <= 6) {
-      setNumRows(2);
-      setNumCols(3);
-    } else {
-      setNumRows(2);
-      setNumCols(4);
-    }
-  };
-
-  const displayEmployees = () => {
-    return (
-      <FlatList
-        data={employees.slice(page * numRows * numCols, (page + 1) * numRows * numCols)}
-        keyExtractor={(_, index) => index.toString()}
-        key={numCols}
-        numColumns={numCols}
-        contentContainerStyle={{
-          flexGrow: 1,
-          justifyContent: "center", // vertical center inside gridContainer
-          alignItems: "center", // horizontal center
-        }}
-        renderItem={({ item }) => (
-          <EmployeeCard
-            ratingInfo={item}
-            onPress={() => {
-              item.ratingStartedAt = new Date().getTime();
-              navigation.navigate("Rating", { ratingInfo: item });
-            }}
-            isTouchable={true}
-          />
-        )}
-      />
-    );
-  };
-
-  const handlePasswordSubmit = async () => {
-    setModalVisible(false);
+  const handlePinSubmit = async () => {    
     const pin = await SecureStore.getItemAsync("pin");
     if (pin === inputPassword) {
+      setModalVisible(false);
       navigation.navigate("Configuration");
+      setInputPassword("");
+      setPinError(false);
     } else {
-      console.log("Wrong password: " + inputPassword);
+      console.log("Wrong PIN: " + inputPassword);
+      setPinError(true);
     }
-    setInputPassword("");
+    
+  };
+
+  const handleEmployeeSelect = (employee: RatingInfo) => {
+    employee.ratingStartedAt = new Date().getTime();
+    navigation.navigate("Rating", { ratingInfo: employee });
   };
 
   return (
     <View style={gstyles.container}>
       <View style={styles.fixedSettingsContainer}>
-        <View style={styles.navigationIconShadow}>
+        <View style={gstyles.roundButtonShadow}>
           <TouchableOpacity onPress={() => setModalVisible(true)}>
             <Icon source="cog-outline" size={30} />
           </TouchableOpacity>
@@ -126,30 +90,10 @@ const PhotoSelectionScreen: React.FC = () => {
       {loading ? (
         <LoadingAnimation message="Cargando empleados..." />
       ) : (
-        <View style={styles.carouselContainer}>
-          <View style={styles.navigationIcon}>
-            {page > 0 && (
-              <View style={styles.navigationIconShadow}>
-                <TouchableOpacity onPress={() => setPage(page - 1)}>
-                  <Icon source="chevron-left" size={60} />
-                </TouchableOpacity>
-              </View>
-            )}
-          </View>
-          <View style={styles.gridContainer}>
-            <Text style={gstyles.subtitle}>{"Selecciona a la persona que te atendió:"}</Text>
-            {displayEmployees()}
-          </View>
-          <View style={styles.navigationIcon}>
-            {page < Math.ceil(employees.length / (numRows * numCols)) - 1 && (
-              <View style={styles.navigationIconShadow}>
-                <TouchableOpacity onPress={() => setPage(page + 1)}>
-                  <Icon source="chevron-right" size={60} />
-                </TouchableOpacity>
-              </View>
-            )}
-          </View>
-        </View>
+        <>
+          <Text style={gstyles.subtitle}>{"Selecciona a la persona que te atendió:"}</Text>
+          <EmployeeCarousel employees={employees} onPress={(item) => handleEmployeeSelect(item)} />
+        </>
       )}
       <View style={gstyles.fixedLogoContainer}>
         {logoUrl && (
@@ -165,6 +109,9 @@ const PhotoSelectionScreen: React.FC = () => {
         <View style={gstyles.modalOverlay}>
           <View style={[styles.alertContainer, { backgroundColor: Colors.background }]}>
             <Text style={gstyles.subtitle}>{"Ingresa el PIN:"}</Text>
+            {
+              pinError && <Text style={[gstyles.subtitle2, { color: 'red' }]}>{"PIN incorrecto. Intenta nuevamente."}</Text>
+            }
             <TextInput
               mode="outlined"
               keyboardType="numeric"
@@ -173,6 +120,7 @@ const PhotoSelectionScreen: React.FC = () => {
               onChangeText={(text) => {
                 // Only allow up to 4 digits and numeric input
                 const filtered = text.replace(/[^0-9]/g, "").slice(0, 4);
+                setPinError(false);
                 setInputPassword(filtered);
               }}
             />
@@ -190,7 +138,7 @@ const PhotoSelectionScreen: React.FC = () => {
               <Button
                 mode="contained"
                 onPress={() => {
-                  handlePasswordSubmit();
+                  handlePinSubmit();
                 }}
                 style={[gstyles.generalButton, { marginTop: 10 }]}
                 labelStyle={{ fontSize: gstyles.textInput.fontSize }}
@@ -206,37 +154,10 @@ const PhotoSelectionScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  carouselContainer: {
-    flex: 1, // take all available vertical space
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  gridContainer: {
-    width: "85%",
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "column",
-    alignContent: "center",
-    borderRadius: 15,
-  },
   navigationIcon: {
     width: 60,
     height: 60,
     marginHorizontal: 10,
-  },
-  navigationIconShadow: {
-    width: 60,
-    height: 60, // Make it square for better shadow
-    backgroundColor: Colors.background, // Visible background for shadow
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 30,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 8, // Android shadow
   },
   fixedSettingsContainer: {
     position: "absolute",

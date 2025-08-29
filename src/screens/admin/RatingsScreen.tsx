@@ -4,35 +4,16 @@ import { getRatings } from "../../queries/RatingQueries";
 import { RatingDto } from "../../models/RatingDto";
 import gstyles, { height, width } from "../../styles/GeneralStyle";
 import { View, Text, FlatList, TouchableOpacity, Modal, StyleSheet } from "react-native";
-import { Picker } from "@react-native-picker/picker";
 import LoadingAnimation from "../../components/LoadingAnimation";
 import { getEmployees } from "../../queries/EmployeeQueries";
 import { PickerDto } from "../../models/PickerDto";
 import { Button, Icon } from "react-native-paper";
-import { formatLocalDateTime, getColorFromRating, getIconFromRating } from "../../utils/Utils";
+import { formatLocalDateTime, getColorFromRating, getIconFromRating, getMonthsForDropdown, getYearsForDropdown } from "../../utils/Utils";
 import { Colors } from "../../styles/Theme";
 import { Dropdown } from "react-native-element-dropdown";
 import { RatingInfo } from "../../models/RatingInfo";
-import EmployeeCard from "../../components/EmployeeCard";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-
-const years = [2022, 2023, 2024, 2025];
-const months: PickerDto[] = [
-  { value: 1, label: "Enero" },
-  { value: 2, label: "Febrero" },
-  { value: 3, label: "Marzo" },
-  { value: 4, label: "Abril" },
-  { value: 5, label: "Mayo" },
-  { value: 6, label: "Junio" },
-  { value: 7, label: "Julio" },
-  { value: 8, label: "Agosto" },
-  { value: 9, label: "Septiembre" },
-  { value: 10, label: "Octubre" },
-  { value: 11, label: "Noviembre" },
-  { value: 12, label: "Diciembre" },
-];
 
 type SortField = "createdAt" | "employeeName" | "rating";
 type SortOrder = "asc" | "desc";
@@ -276,11 +257,11 @@ const RatingsScreen: React.FC = () => {
             <View style={{ width: "20%", marginHorizontal: 20 }}>
               <Text style={gstyles.subtitle}>Año:</Text>
               <Dropdown
-                data={years.map((yr) => ({ label: yr.toString(), value: yr }))}
+                data={getYearsForDropdown().map((yr) => ({ label: yr.label, value: yr.value }))}
                 labelField="label"
                 valueField="value"
                 autoScroll={false}
-                value={year}
+                value={getYearsForDropdown().find((item) => item.value === year)}
                 onChange={(item) => setYear(item.value)}
                 placeholder="Año"
                 selectedTextStyle={gstyles.text}
@@ -291,10 +272,10 @@ const RatingsScreen: React.FC = () => {
             <View style={{ width: "28%", marginHorizontal: 20 }}>
               <Text style={gstyles.subtitle}>Mes:</Text>
               <Dropdown
-                data={months.map((mn) => ({ label: mn.label, value: mn.value }))}
+                data={getMonthsForDropdown().map((mn) => ({ label: mn.label, value: mn.value }))}
                 labelField="label"
                 valueField="value"
-                value={months.find((item) => item.value === month)}
+                value={getMonthsForDropdown().find((item) => item.value === month)}
                 onChange={(item) => setMonth(item.value)}
                 placeholder="Mes"
                 selectedTextStyle={gstyles.text}

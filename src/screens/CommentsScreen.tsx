@@ -1,16 +1,16 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Modal, Image, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
-import { TextInput, Button, Icon } from "react-native-paper";
+import { View, Text, StyleSheet, Image, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
+import { TextInput, Button } from "react-native-paper";
 import * as SecureStore from "expo-secure-store";
 import { ParamListBase, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import gstyles, { height, width } from "../styles/GeneralStyle";
 import { RatingInfo } from "../models/RatingInfo";
-import { Colors } from "../styles/Theme";
 import LoadingAnimation from "../components/LoadingAnimation";
 import { getIconFromRating } from "../utils/Utils";
 import { postRating } from "../queries/RatingQueries";
+import GeneralStatusModal from "../components/GeneralStatusModal";
 
 type ParamList = {
   CommentsScreen: {
@@ -47,10 +47,10 @@ const CommentsScreen: React.FC = () => {
     });
     if (response.status !== 201) {
       console.error("Error posting rating:", response.statusText);
-      setRatingPostStatus("Error");
+      setRatingPostStatus("error");
     } else {
       console.log("Rating posted successfully:", response.data);
-      setRatingPostStatus("Success");
+      setRatingPostStatus("success");
     }
 
     setLoading(false);
@@ -58,7 +58,7 @@ const CommentsScreen: React.FC = () => {
     setTimeout(() => {
       setModalVisible(false);
       navigation.navigate("Home");
-    }, 4000); // 4 seconds to automatically close the modal
+    }, 5000); // 5 seconds to automatically close the modal
   };
 
   const handleFinish = () => {
@@ -138,29 +138,14 @@ const CommentsScreen: React.FC = () => {
               </View>
             </View>
           )}
-
-          <Modal visible={modalVisible} transparent={true} animationType="fade">
-            <View style={gstyles.modalOverlay}>
-              <View style={[styles.alertContainer, { backgroundColor: Colors.background }]}>
-                <Icon
-                  source={ratingPostStatus === "Success" ? "check-circle-outline" : "close-circle-outline"}
-                  size={width * 0.055}
-                  color={ratingPostStatus === "Success" ? "green" : "red"}
-                />
-                <Text style={gstyles.subtitle}>{"Gracias por calificar nuestro servicio!"}</Text>
-                <Button
-                  mode="contained"
-                  onPress={() => {
-                    handleFinish();
-                  }}
-                  style={[gstyles.generalButton, { marginTop: 10 }]}
-                  labelStyle={{ fontSize: width * 0.0175 }}
-                >
-                  {"Continuar"}
-                </Button>
-              </View>
-            </View>
-          </Modal>
+          <GeneralStatusModal
+            isVisible={modalVisible}
+            status={ratingPostStatus === "success" ? "success" : "error"}
+            message={ratingPostStatus === "success" ? "Gracias por calificar nuestro servicio!" : "Hubo un error al enviar tu calificación. Por favor, intenta de nuevo más tarde."}
+            onPress1={handleFinish}
+            button1Text="Continuar"
+            widthProportion={0.4}
+          />
           <View style={gstyles.fixedLogoContainer}>
             {ratingInfo.companyLogoUrl && (
               <Image

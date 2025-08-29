@@ -4,4 +4,6 @@ export interface EmployeeDto {
   employeeName: string;
   photoUrl: string;
   createdAt: string;
+  fileContent?: string; // Base64 encoded image content
+  contentType?: string; 
 };
