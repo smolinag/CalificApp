@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
+import * as FileSystem from "expo-file-system";
+import * as Sharing from "expo-sharing";
 import { getRatings } from "../../queries/RatingQueries";
 import { RatingDto } from "../../models/RatingDto";
 import gstyles, { height, width } from "../../styles/GeneralStyle";
@@ -8,7 +10,13 @@ import LoadingAnimation from "../../components/LoadingAnimation";
 import { getEmployees } from "../../queries/EmployeeQueries";
 import { PickerDto } from "../../models/PickerDto";
 import { Button, Icon } from "react-native-paper";
-import { formatLocalDateTime, getColorFromRating, getIconFromRating, getMonthsForDropdown, getYearsForDropdown } from "../../utils/Utils";
+import {
+  formatLocalDateTime,
+  getColorFromRating,
+  getIconFromRating,
+  getMonthsForDropdown,
+  getYearsForDropdown,
+} from "../../utils/Utils";
 import { Colors } from "../../styles/Theme";
 import { Dropdown } from "react-native-element-dropdown";
 import { RatingInfo } from "../../models/RatingInfo";
@@ -170,6 +178,57 @@ const RatingsScreen: React.FC = () => {
     navigation.goBack();
   };
 
+  const downloadRatingsCsv = async(ratings: RatingDto[], filename = "ratings.csv") => {
+    const headers = [
+      "ID",
+      "Rating",
+      "Comment",
+      "Employee Name",
+      "Device ID",
+      "Date",
+      "Rater Name",
+      "Rating Time (ms)",
+      "Created At",
+    ];
+
+    const rows = ratings.map((r) => [
+      r.id,
+      r.rating,
+      r.comment,
+      r.employeeName,
+      r.deviceId,
+      r.date,
+      r.raterName,
+      r.ratingTimeMs ?? "",
+      r.createdAt ?? "",
+    ]);
+
+    const escape = (val: unknown) => {
+      if (val === null || val === undefined) return "";
+      const str = String(val);
+      return /[",\r\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
+    };
+
+    const csv = [headers, ...rows].map((row) => row.map(escape).join(",")).join("\r\n");
+
+    // Write file to app's cache dir
+    const fileUri = FileSystem.cacheDirectory + filename;
+    await FileSystem.writeAsStringAsync(fileUri, "\uFEFF" + csv, {
+      encoding: FileSystem.EncodingType.UTF8,
+    });
+
+    // Share using system share dialog
+    if (await Sharing.isAvailableAsync()) {
+      await Sharing.shareAsync(fileUri);
+    } else {
+      alert("Sharing not available on this device");
+    }
+  };
+
+  const handleDownload = () => {
+    downloadRatingsCsv(filteredRatings, `ratings_${year}_${String(month).padStart(2, "0")}_.csv`);
+  };
+
   const renderRatingsTable = () => {
     const sortedRatings = sortRatings(filteredRatings);
 
@@ -253,51 +312,58 @@ const RatingsScreen: React.FC = () => {
             </View>
           </View>
           <Text style={gstyles.title}>{"Calificaciones recibidas"}</Text>
-          <View style={{ width: "50%", flexDirection: "row", justifyContent: "space-between", marginBottom: "2%" }}>
-            <View style={{ width: "20%", marginHorizontal: 20 }}>
-              <Text style={gstyles.subtitle}>Año:</Text>
-              <Dropdown
-                data={getYearsForDropdown().map((yr) => ({ label: yr.label, value: yr.value }))}
-                labelField="label"
-                valueField="value"
-                autoScroll={false}
-                value={getYearsForDropdown().find((item) => item.value === year)}
-                onChange={(item) => setYear(item.value)}
-                placeholder="Año"
-                selectedTextStyle={gstyles.text}
-                maxHeight={300}
-                itemTextStyle={gstyles.text}
-              />
+          <View style={{ flexDirection: "row" }}>
+            <View style={styles.navigationIcon}>
+              <TouchableOpacity onPress={() => handleDownload()}>
+                <Icon source="file-download-outline" size={30} />
+              </TouchableOpacity>
             </View>
-            <View style={{ width: "28%", marginHorizontal: 20 }}>
-              <Text style={gstyles.subtitle}>Mes:</Text>
-              <Dropdown
-                data={getMonthsForDropdown().map((mn) => ({ label: mn.label, value: mn.value }))}
-                labelField="label"
-                valueField="value"
-                value={getMonthsForDropdown().find((item) => item.value === month)}
-                onChange={(item) => setMonth(item.value)}
-                placeholder="Mes"
-                selectedTextStyle={gstyles.text}
-                maxHeight={120}
-                containerStyle={{ height: height * 0.6 }}
-                itemTextStyle={gstyles.text}
-              />
-            </View>
-            <View style={{ width: "35%", marginHorizontal: 20 }}>
-              <Text style={gstyles.subtitle}>Empleado:</Text>
-              <Dropdown
-                data={employeePickerItems.map((e) => ({ label: e.label, value: e.value }))}
-                labelField="label"
-                valueField="value"
-                value={employeePickerItems.find((item) => item.value === selectedEmployee)}
-                onChange={(item) => handleEmployeeChange(item.value)}
-                placeholder="Mes"
-                selectedTextStyle={gstyles.text}
-                maxHeight={200}
-                containerStyle={{ height: height * 0.6 }}
-                itemTextStyle={gstyles.text}
-              />
+            <View style={{ width: "50%", flexDirection: "row", justifyContent: "space-between", marginBottom: "2%" }}>
+              <View style={{ width: "20%", marginHorizontal: 20 }}>
+                <Text style={gstyles.subtitle}>Año:</Text>
+                <Dropdown
+                  data={getYearsForDropdown().map((yr) => ({ label: yr.label, value: yr.value }))}
+                  labelField="label"
+                  valueField="value"
+                  autoScroll={false}
+                  value={getYearsForDropdown().find((item) => item.value === year)}
+                  onChange={(item) => setYear(item.value)}
+                  placeholder="Año"
+                  selectedTextStyle={gstyles.text}
+                  maxHeight={300}
+                  itemTextStyle={gstyles.text}
+                />
+              </View>
+              <View style={{ width: "28%", marginHorizontal: 20 }}>
+                <Text style={gstyles.subtitle}>Mes:</Text>
+                <Dropdown
+                  data={getMonthsForDropdown().map((mn) => ({ label: mn.label, value: mn.value }))}
+                  labelField="label"
+                  valueField="value"
+                  value={getMonthsForDropdown().find((item) => item.value === month)}
+                  onChange={(item) => setMonth(item.value)}
+                  placeholder="Mes"
+                  selectedTextStyle={gstyles.text}
+                  maxHeight={120}
+                  containerStyle={{ height: height * 0.6 }}
+                  itemTextStyle={gstyles.text}
+                />
+              </View>
+              <View style={{ width: "35%", marginHorizontal: 20 }}>
+                <Text style={gstyles.subtitle}>Empleado:</Text>
+                <Dropdown
+                  data={employeePickerItems.map((e) => ({ label: e.label, value: e.value }))}
+                  labelField="label"
+                  valueField="value"
+                  value={employeePickerItems.find((item) => item.value === selectedEmployee)}
+                  onChange={(item) => handleEmployeeChange(item.value)}
+                  placeholder="Mes"
+                  selectedTextStyle={gstyles.text}
+                  maxHeight={200}
+                  containerStyle={{ height: height * 0.6 }}
+                  itemTextStyle={gstyles.text}
+                />
+              </View>
             </View>
           </View>
           <View
@@ -371,10 +437,14 @@ const RatingsScreen: React.FC = () => {
       <Modal visible={selectedComment !== null} transparent={true} animationType="fade">
         <View style={gstyles.modalOverlay}>
           <View style={[styles.alertContainer, { backgroundColor: Colors.background }]}>
-            <Icon source={"comment-outline"} size={width * 0.035}/>
+            <Icon source={"comment-outline"} size={width * 0.035} />
             <View style={{ marginVertical: 10, alignItems: "flex-start", width: "100%" }}>
-              <Text style={gstyles.text}>{"Fecha: " + (selectedComment != null && formatLocalDateTime(selectedComment.createdAt))}</Text>
-              <Text style={gstyles.text}>{"Empleado: " + (selectedComment != null && selectedComment.employeeName)}</Text>
+              <Text style={gstyles.text}>
+                {"Fecha: " + (selectedComment != null && formatLocalDateTime(selectedComment.createdAt))}
+              </Text>
+              <Text style={gstyles.text}>
+                {"Empleado: " + (selectedComment != null && selectedComment.employeeName)}
+              </Text>
               <Text style={gstyles.text}>{"Comentario: " + (selectedComment != null && selectedComment.comment)}</Text>
               <Text style={gstyles.text}>{"Calificación: " + (selectedComment != null && selectedComment.rating)}</Text>
               <Text style={gstyles.text}>
@@ -417,6 +487,22 @@ const styles = StyleSheet.create({
     width: "80%",
     borderRadius: 10,
     alignItems: "center",
+  },
+  navigationIcon: {
+    width: 40,
+    height: 40,
+    marginHorizontal: 10,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 5,
+    backgroundColor: Colors.background,
   },
 });
 

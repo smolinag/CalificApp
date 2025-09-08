@@ -90,10 +90,10 @@ const PhotoSelectionScreen: React.FC = () => {
       {loading ? (
         <LoadingAnimation message="Cargando empleados..." />
       ) : (
-        <>
+        <View style={{ alignItems: "center", width: "100%", flex: 1 }}>
           <Text style={gstyles.subtitle}>{"Selecciona a la persona que te atendió:"}</Text>
           <EmployeeCarousel employees={employees} onPress={(item) => handleEmployeeSelect(item)} />
-        </>
+        </View>
       )}
       <View style={gstyles.fixedLogoContainer}>
         {logoUrl && (

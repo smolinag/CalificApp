@@ -92,9 +92,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    width: "100%",
   },
   gridContainer: {
-    width: "85%",
+    width: "80%",
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "column",

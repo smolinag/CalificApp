@@ -37,3 +37,15 @@ export const deleteEmployee = async (id: string, rangeId: string): Promise<Axios
     return null;
   }
 };
+
+export const updateEmployee = async (employee: EmployeeDto, photoChanged: boolean): Promise<AxiosResponse | null> => {
+  try {
+    const response = await axios.put(ConfigProperties.serverUrl + employeesPath, employee, {
+      params: { photoChanged },
+    });
+    return response;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};

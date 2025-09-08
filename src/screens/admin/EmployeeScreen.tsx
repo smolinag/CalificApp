@@ -9,7 +9,7 @@ import { ParamListBase, RouteProp, useNavigation, useRoute } from "@react-naviga
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { EmployeeDto } from "../../models/EmployeeDto";
 import { ConfigProperties } from "../../utils/ConfigProperties";
-import { createEmployee, deleteEmployee } from "../../queries/EmployeeQueries";
+import { createEmployee, deleteEmployee, updateEmployee } from "../../queries/EmployeeQueries";
 import GeneralStatusModal from "../../components/GeneralStatusModal";
 
 type ParamList = {
@@ -42,7 +42,7 @@ const EmployeeScreen: React.FC = () => {
       mediaTypes: "images",
       quality: 1,
       allowsEditing: true,
-      base64: true, 
+      base64: true,
     });
     if (!result.canceled && result.assets && result.assets.length > 0) {
       setImageUrl(result.assets[0].uri);
@@ -63,10 +63,29 @@ const EmployeeScreen: React.FC = () => {
   const handleAccept = async () => {
     if (employee.employeeName) {
       // Update existing employee
+      setLoading(true);
+      try {
+        const updatedEmployee: EmployeeDto = {
+          ...employee,
+          employeeName: employeeName || employee.employeeName,
+          fileContent: selectedImage?.base64,
+          contentType: selectedImage ? extractFileExtension(selectedImage.uri) : employee.contentType,
+        };
+        const response = await updateEmployee(updatedEmployee, selectedImage !== null);
+        if (response && response.status === 200) {
+          setActionStatus("updateSuccess");
+        } else {
+          setActionStatus("updateError");
+        }
+      } catch (error) {
+        console.error("Error updating employee:", error);
+        setActionStatus("updateError");
+      } finally {
+        setLoading(false);
+      }
     } else {
       // Create new employee
       setLoading(true);
-      console.log(selectedImage)
       try {
         const companyName = await SecureStore.getItemAsync("companyName");
         const newEmployee: EmployeeDto = {
@@ -95,11 +114,11 @@ const EmployeeScreen: React.FC = () => {
 
   const handleDelete = () => {
     setActionStatus("deleteWarning");
-  }
+  };
 
   const handleDeleteAccept = async () => {
     if (employee.id && employee.rangeId) {
-      setLoading
+      setLoading;
       try {
         const response = await deleteEmployee(employee.id, employee.rangeId);
         if (response && response.status === 200) {
@@ -128,6 +147,10 @@ const EmployeeScreen: React.FC = () => {
         return "Error al eliminar el empleado.";
       case "deleteWarning":
         return "¿Está seguro de que desea eliminar este empleado?. Las calificaciones asociadas NO se eliminarán.";
+      case "updateSuccess":
+        return "Empleado actualizado exitosamente.";
+      case "updateError":
+        return "Error al actualizar el empleado.";
       default:
         return null;
     }
@@ -220,11 +243,11 @@ const EmployeeScreen: React.FC = () => {
         message={getStatusMessage() || ""}
         button1Text="Aceptar"
         onPress1={() => {
-          if (actionStatus === "createSuccess" || actionStatus === "deleteSuccess") {
+          if (actionStatus?.includes("Success")) {
             navigation.goBack();
-          } else if(actionStatus === "deleteWarning"){
+          } else if (actionStatus === "deleteWarning") {
             handleDeleteAccept();
-          }else {
+          } else {
             setActionStatus(null);
           }
         }}
