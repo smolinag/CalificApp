@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Modal } from "react-native";
-import gstyles, { width } from "../styles/GeneralStyle";
-import { Colors } from "../styles/Theme";
+import { getGeneralStyles, width } from "../styles/GeneralStyle";
 import { Button, Icon } from "react-native-paper";
+import { useTheme } from "../context/ThemeContext";
 
 const GeneralStatusModal: React.FC<{
   isVisible: boolean;
@@ -22,6 +22,9 @@ const GeneralStatusModal: React.FC<{
   button2Text = "Cancelar",
   widthProportion = 0.225,
 }) => {
+  const { theme } = useTheme();
+  const gstyles = getGeneralStyles(theme);
+
   const getStatusIcon = () => {
     switch (status) {
       case "success":
@@ -38,7 +41,7 @@ const GeneralStatusModal: React.FC<{
   return (
     <Modal visible={isVisible} transparent={true} animationType="fade">
       <View style={gstyles.modalOverlay}>
-        <View style={[styles.alertContainer, { width: width * widthProportion }]}>
+        <View style={[styles.alertContainer, { width: width * widthProportion, backgroundColor: theme.background }]}>
           {getStatusIcon()}
           <View style={{ marginVertical: 10, alignItems: "flex-start" }}>
             <Text style={gstyles.subtitle2}>{message}</Text>
@@ -80,7 +83,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     textAlign: "center",
-    backgroundColor: Colors.background,
   },
 });
 

@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { TextInput, Button, Icon } from "react-native-paper";
-import gstyles, { width } from "../styles/GeneralStyle";
+import { getGeneralStyles, width } from "../styles/GeneralStyle";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import * as SecureStore from "expo-secure-store";
+import { useTheme } from "../context/ThemeContext";
 
 const InitialConfigurationScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
@@ -12,6 +13,9 @@ const InitialConfigurationScreen: React.FC = () => {
   const [companyName, setCompanyName] = useState("");
   const [deviceId, setDeviceId] = useState("");
   const [pin, setPin] = useState("");
+
+  const { theme } = useTheme();
+  const gstyles = getGeneralStyles(theme);
 
   const handleSubmit = async () => {
     if (companyName !== "" && deviceId !== "" && pin !== "") {
@@ -72,7 +76,7 @@ const InitialConfigurationScreen: React.FC = () => {
               onPress={() => {
                 handleSubmit();
               }}
-              style={[gstyles.generalButton, { marginTop: 10 }]}
+              style={[gstyles.generalButton, { marginTop: 10, alignSelf: "center" }]}
               labelStyle={{ fontSize: width * 0.0175 }}
               disabled={!companyName || !deviceId || !pin}
             >

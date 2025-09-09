@@ -30,7 +30,7 @@ export const getColorFromRating = (rating: number): string => {
     case 5:
       return Colors.rating5;
     default:
-      return Colors.background; // Default color if no rating matches
+      return "FFF"; // Default color if no rating matches
   }
 };
 

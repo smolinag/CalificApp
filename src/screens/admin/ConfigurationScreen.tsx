@@ -1,17 +1,21 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { Button, Icon } from "react-native-paper";
-import gstyles, { width } from "../../styles/GeneralStyle";
 import * as SecureStore from "expo-secure-store";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import Constants from "expo-constants";
 import GeneralStatusModal from "../../components/GeneralStatusModal";
+import { useTheme } from "../../context/ThemeContext";
+import { getGeneralStyles, width } from "../../styles/GeneralStyle";
 
 const ConfigurationScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
   const [showResetModal, setShowResetModal] = useState(false);
+
+  const { theme, reloadTheme } = useTheme();
+  const gstyles = getGeneralStyles(theme);
 
   const appVersion = Constants.expoConfig?.version;
 
@@ -39,6 +43,10 @@ const ConfigurationScreen: React.FC = () => {
     navigation.goBack();
   };
 
+  const handleTheme = () => {
+    reloadTheme();
+  }
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -49,59 +57,66 @@ const ConfigurationScreen: React.FC = () => {
         <View style={gstyles.container}>
           <View style={styles.mainContainer}>
             <View style={gstyles.fixedReturnButtonContainer}>
-              <View style={gstyles.shadowWrapper}>
-                <Button
-                  mode="contained"
-                  onPress={handleBack}
-                  icon="arrow-left"
-                  style={gstyles.returnButton}
-                  labelStyle={{ color: "black", fontSize: width * 0.0175 }}
-                >
-                  {"Atrás"}
-                </Button>
-              </View>
+              <Button
+                mode="contained"
+                onPress={handleBack}
+                icon="arrow-left"
+                style={gstyles.returnButton}
+                labelStyle={gstyles.returnButtonLabel}
+              >
+                {"Atrás"}
+              </Button>
             </View>
             <View
-              style={{ flexDirection: "column", justifyContent: "space-between", alignItems: "center", width: "100%" }}
+              style={{
+                flexDirection: "column",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "100%",
+              }}
             >
               <Text style={gstyles.title}>{"Configuración"}</Text>
-              <Icon source="cog" size={40} color="#000" />
-              <View style={gstyles.shadowWrapper}>
-                <Button
-                  mode="contained"
-                  onPress={() => {
-                    handleShowRatings();
-                  }}
-                  style={[gstyles.generalButton, { marginTop: 10 }]}
-                  labelStyle={{ fontSize: width * 0.0175 }}
-                >
-                  {"Calificaciones"}
-                </Button>
-              </View>
-              <View style={gstyles.shadowWrapper}>
-                <Button
-                  mode="contained"
-                  onPress={() => {
-                    handleShowEmployees();
-                  }}
-                  style={[gstyles.generalButton, { marginTop: 10 }]}
-                  labelStyle={{ fontSize: width * 0.0175 }}
-                >
-                  {"Empleados"}
-                </Button>
-              </View>
-              <View style={gstyles.shadowWrapper}>
-                <Button
-                  mode="contained"
-                  onPress={() => {
-                    handleResetApp();
-                  }}
-                  style={[gstyles.generalButton, { marginTop: 10 }]}
-                  labelStyle={{ fontSize: width * 0.0175 }}
-                >
-                  {"Reset App"}
-                </Button>
-              </View>
+              <Icon source="cog" size={40} color={theme.text} />
+              <Button
+                mode="contained"
+                onPress={() => {
+                  handleShowRatings();
+                }}
+                style={[gstyles.generalButton, { marginTop: 10 }]}
+                labelStyle={{ fontSize: width * 0.0175 }}
+              >
+                {"Calificaciones"}
+              </Button>
+              <Button
+                mode="contained"
+                onPress={() => {
+                  handleShowEmployees();
+                }}
+                style={[gstyles.generalButton, { marginTop: 10 }]}
+                labelStyle={{ fontSize: width * 0.0175 }}
+              >
+                {"Empleados"}
+              </Button>
+              <Button
+                mode="contained"
+                onPress={() => {
+                  handleTheme();
+                }}
+                style={[gstyles.generalButton, { marginTop: 10 }]}
+                labelStyle={{ fontSize: width * 0.0175 }}
+              >
+                {"Apariencia"}
+              </Button>
+              <Button
+                mode="contained"
+                onPress={() => {
+                  handleResetApp();
+                }}
+                style={[gstyles.generalButton, { marginTop: 10 }]}
+                labelStyle={{ fontSize: width * 0.0175 }}
+              >
+                {"Reset App"}
+              </Button>
               <Text style={gstyles.text}>{"Versión: " + appVersion}</Text>
             </View>
           </View>
@@ -116,7 +131,7 @@ const ConfigurationScreen: React.FC = () => {
             onPress2={() => setShowResetModal(false)}
             status="warning"
             widthProportion={0.4}
-          />          
+          />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

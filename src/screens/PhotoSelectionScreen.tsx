@@ -1,33 +1,35 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, View, StyleSheet, Text, TouchableOpacity, Image, Modal } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, Image, Modal } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { Button, Icon, TextInput } from "react-native-paper";
 import * as SecureStore from "expo-secure-store";
 
 import { getEmployees } from "../queries/EmployeeQueries";
-import EmployeeCard from "../components/EmployeeCard";
-import gstyles, { width } from "../styles/GeneralStyle";
+import { getGeneralStyles } from "../styles/GeneralStyle";
 import { RatingInfo } from "../models/RatingInfo";
 import { ConfigProperties } from "../utils/ConfigProperties";
-import { Colors } from "../styles/Theme";
 import LoadingAnimation from "../components/LoadingAnimation";
 import EmployeeCarousel from "../components/EmployeeCarousel";
+import { useTheme } from "../context/ThemeContext";
+import { rgbToRgba } from "../utils/Utils";
 
 const PhotoSelectionScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const [employees, setEmployees] = useState<RatingInfo[]>([]);
   const [logoUrl, setLogoUrl] = useState<string>("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [inputPassword, setInputPassword] = useState("");
   const [pinError, setPinError] = useState(false);
 
+  const { theme } = useTheme();
+  const gstyles = getGeneralStyles(theme);
+
   const fetchEmployees = async () => {
     const companyName = await SecureStore.getItemAsync("companyName");
-    const logoUrl = `${ConfigProperties.s3BucketUrl.replace(/\/$/, "")}/${companyName}/logo.png`;
+    const logoUrl = `${ConfigProperties.s3BucketUrl.replace(/\/$/, "")}/${companyName}/logo.png?v=1`;
     setLogoUrl(logoUrl);
-    setLoading(true);
     const response = await getEmployees(companyName);
     if (response && response.data) {
       const employeeData: RatingInfo[] = response.data.map((employee: any) => ({
@@ -38,7 +40,6 @@ const PhotoSelectionScreen: React.FC = () => {
       }));
       console.log("Fetched employees: " + employeeData.length);
       setEmployees(employeeData);
-      setLoading(false);
     } else {
       console.error("Failed to fetch employees");
     }
@@ -53,12 +54,14 @@ const PhotoSelectionScreen: React.FC = () => {
         navigation.navigate("InitialConfiguration");
       } else {
         await fetchEmployees();
+
+        setLoading(false);
       }
     };
     checkConfiguration();
   }, []);
 
-  const handlePinSubmit = async () => {    
+  const handlePinSubmit = async () => {
     const pin = await SecureStore.getItemAsync("pin");
     if (pin === inputPassword) {
       setModalVisible(false);
@@ -69,7 +72,6 @@ const PhotoSelectionScreen: React.FC = () => {
       console.log("Wrong PIN: " + inputPassword);
       setPinError(true);
     }
-    
   };
 
   const handleEmployeeSelect = (employee: RatingInfo) => {
@@ -79,12 +81,10 @@ const PhotoSelectionScreen: React.FC = () => {
 
   return (
     <View style={gstyles.container}>
-      <View style={styles.fixedSettingsContainer}>
-        <View style={gstyles.roundButtonShadow}>
-          <TouchableOpacity onPress={() => setModalVisible(true)}>
-            <Icon source="cog-outline" size={30} />
-          </TouchableOpacity>
-        </View>
+      <View style={[styles.fixedSettingsContainer, { borderColor: rgbToRgba(theme.primary, 0.5) }]}>
+        <TouchableOpacity onPress={() => setModalVisible(true)}>
+          <Icon source="cog-outline" size={30} color={theme.primary} />
+        </TouchableOpacity>
       </View>
       <Text style={gstyles.title}>{"Califica nuestro servicio"}</Text>
       {loading ? (
@@ -107,11 +107,11 @@ const PhotoSelectionScreen: React.FC = () => {
       </View>
       <Modal visible={modalVisible} transparent={true} animationType="fade">
         <View style={gstyles.modalOverlay}>
-          <View style={[styles.alertContainer, { backgroundColor: Colors.background }]}>
+          <View style={[styles.alertContainer, { backgroundColor: theme.background }]}>
             <Text style={gstyles.subtitle}>{"Ingresa el PIN:"}</Text>
-            {
-              pinError && <Text style={[gstyles.subtitle2, { color: 'red' }]}>{"PIN incorrecto. Intenta nuevamente."}</Text>
-            }
+            {pinError && (
+              <Text style={[gstyles.subtitle2, { color: "red" }]}>{"PIN incorrecto. Intenta nuevamente."}</Text>
+            )}
             <TextInput
               mode="outlined"
               keyboardType="numeric"
@@ -164,6 +164,9 @@ const styles = StyleSheet.create({
     top: 30,
     right: 30,
     zIndex: 10,
+    borderWidth: 1,
+    borderRadius: 30,
+    padding:4
   },
   alertContainer: {
     width: 400,

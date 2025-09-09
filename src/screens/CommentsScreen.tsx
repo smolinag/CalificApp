@@ -5,12 +5,13 @@ import * as SecureStore from "expo-secure-store";
 import { ParamListBase, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-import gstyles, { height, width } from "../styles/GeneralStyle";
+import { getGeneralStyles, height, width } from "../styles/GeneralStyle";
 import { RatingInfo } from "../models/RatingInfo";
 import LoadingAnimation from "../components/LoadingAnimation";
 import { getIconFromRating } from "../utils/Utils";
 import { postRating } from "../queries/RatingQueries";
 import GeneralStatusModal from "../components/GeneralStatusModal";
+import { useTheme } from "../context/ThemeContext";
 
 type ParamList = {
   CommentsScreen: {
@@ -28,6 +29,9 @@ const CommentsScreen: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [ratingPostStatus, setRatingPostStatus] = useState("");
+
+  const { theme } = useTheme();
+  const gstyles = getGeneralStyles(theme);
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -79,17 +83,15 @@ const CommentsScreen: React.FC = () => {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={gstyles.container}>
           <View style={gstyles.fixedReturnButtonContainer}>
-            <View style={gstyles.shadowWrapper}>
-              <Button
-                mode="contained"
-                onPress={handleBack}
-                icon="arrow-left"
-                style={gstyles.returnButton}
-                labelStyle={{ color: "black", fontSize: gstyles.subtitle2.fontSize }}
-              >
-                {"Atrás"}
-              </Button>
-            </View>
+            <Button
+              mode="contained"
+              onPress={handleBack}
+              icon="arrow-left"
+              style={gstyles.returnButton}
+              labelStyle={gstyles.returnButtonLabel}
+            >
+              {"Atrás"}
+            </Button>
           </View>
           {loading ? (
             <LoadingAnimation message="Enviando calificación..." />
@@ -120,28 +122,35 @@ const CommentsScreen: React.FC = () => {
                 label="Escribe tu comentario aquí..."
                 multiline
                 numberOfLines={4}
-                style={{ width: "90%", marginVertical: 5, height: height * 0.275, fontSize: gstyles.textInput.fontSize }}
+                style={{
+                  width: "90%",
+                  marginVertical: 5,
+                  height: height * 0.275,
+                  fontSize: gstyles.textInput.fontSize,
+                }}
                 value={comments}
                 onChangeText={setComments}
               />
-              <View style={gstyles.shadowWrapper}>
-                <Button
-                  mode="contained"
-                  onPress={() => {
-                    handleSubmit();
-                  }}
-                  style={[gstyles.generalButton, { marginTop: 10 }]}
-                  labelStyle={{ fontSize: width * 0.0175 }}
-                >
-                  {"Finalizar"}
-                </Button>
-              </View>
+              <Button
+                mode="contained"
+                onPress={() => {
+                  handleSubmit();
+                }}
+                style={[gstyles.generalButton, { marginTop: 10 }]}
+                labelStyle={{ fontSize: width * 0.0175 }}
+              >
+                {"Finalizar"}
+              </Button>
             </View>
           )}
           <GeneralStatusModal
             isVisible={modalVisible}
             status={ratingPostStatus === "success" ? "success" : "error"}
-            message={ratingPostStatus === "success" ? "Gracias por calificar nuestro servicio!" : "Hubo un error al enviar tu calificación. Por favor, intenta de nuevo más tarde."}
+            message={
+              ratingPostStatus === "success"
+                ? "Gracias por calificar nuestro servicio!"
+                : "Hubo un error al enviar tu calificación. Por favor, intenta de nuevo más tarde."
+            }
             onPress1={handleFinish}
             button1Text="Continuar"
             widthProportion={0.4}

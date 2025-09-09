@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import { View, Text } from "react-native";
-import gstyles, { width } from "../../styles/GeneralStyle";
+import { getGeneralStyles, width } from "../../styles/GeneralStyle";
 import LoadingAnimation from "../../components/LoadingAnimation";
 import { getEmployees } from "../../queries/EmployeeQueries";
 import { EmployeeDto } from "../../models/EmployeeDto";
@@ -10,12 +10,16 @@ import { ParamListBase, useFocusEffect, useNavigation } from "@react-navigation/
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import EmployeeCarousel from "../../components/EmployeeCarousel";
 import { RatingInfo } from "../../models/RatingInfo";
+import { useTheme } from "../../context/ThemeContext";
 
 const EmployeesScreen: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [employees, setEmployees] = useState<EmployeeDto[]>([]);
 
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+
+  const { theme } = useTheme();
+  const gstyles = getGeneralStyles(theme);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -50,8 +54,7 @@ const EmployeesScreen: React.FC = () => {
     const selEmployee: EmployeeDto | undefined = employees.find(
       (e) => e.employeeName === employee.employeeName && e.photoUrl === employee.photoUrl
     );
-    if (selEmployee)
-      navigation.navigate("Employee", { employee: selEmployee });
+    if (selEmployee) navigation.navigate("Employee", { employee: selEmployee });
   };
 
   const handleCreateEmployee = () => {
@@ -62,35 +65,31 @@ const EmployeesScreen: React.FC = () => {
     <View style={gstyles.container}>
       <Text style={[gstyles.title]}>{"Empleados"}</Text>
       <View style={gstyles.fixedReturnButtonContainer}>
-        <View style={gstyles.shadowWrapper}>
-          <Button
-            mode="contained"
-            onPress={handleBack}
-            icon="arrow-left"
-            style={gstyles.returnButton}
-            labelStyle={{ color: "black", fontSize: width * 0.0175 }}
-          >
-            {"Atrás"}
-          </Button>
-        </View>
+        <Button
+          mode="contained"
+          onPress={handleBack}
+          icon="arrow-left"
+          style={gstyles.returnButton}
+          labelStyle={gstyles.returnButtonLabel}
+        >
+          {"Atrás"}
+        </Button>
       </View>
       {loading ? (
         <LoadingAnimation message="Cargando empleados..." />
       ) : (
         <View style={{ flex: 1, width: "100%", alignItems: "center" }}>
-          <View style={gstyles.shadowWrapper}>
-            <Button
-              mode="contained"
-              onPress={() => {
-                handleCreateEmployee();
-              }}
-              style={[gstyles.generalButton]}
-              labelStyle={{ fontSize: width * 0.0175 }}
-              icon="plus"
-            >
-              {"Crear Empleado"}
-            </Button>
-          </View>
+          <Button
+            mode="contained"
+            onPress={() => {
+              handleCreateEmployee();
+            }}
+            style={[gstyles.generalButton]}
+            labelStyle={{ fontSize: width * 0.0175 }}
+            icon="plus"
+          >
+            {"Crear Empleado"}
+          </Button>
           <View style={{ height: "85%", width: "100%", alignItems: "center" }}>
             <EmployeeCarousel
               employees={employees.map((emp) => ({

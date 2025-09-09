@@ -4,7 +4,7 @@ import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import { getRatings } from "../../queries/RatingQueries";
 import { RatingDto } from "../../models/RatingDto";
-import gstyles, { height, width } from "../../styles/GeneralStyle";
+import { getGeneralStyles, height, width } from "../../styles/GeneralStyle";
 import { View, Text, FlatList, TouchableOpacity, Modal, StyleSheet } from "react-native";
 import LoadingAnimation from "../../components/LoadingAnimation";
 import { getEmployees } from "../../queries/EmployeeQueries";
@@ -16,12 +16,13 @@ import {
   getIconFromRating,
   getMonthsForDropdown,
   getYearsForDropdown,
+  rgbToRgba,
 } from "../../utils/Utils";
-import { Colors } from "../../styles/Theme";
 import { Dropdown } from "react-native-element-dropdown";
 import { RatingInfo } from "../../models/RatingInfo";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useTheme } from "../../context/ThemeContext";
 
 type SortField = "createdAt" | "employeeName" | "rating";
 type SortOrder = "asc" | "desc";
@@ -42,6 +43,9 @@ const RatingsScreen: React.FC = () => {
   const [worstEmployee, setWorstEmployee] = useState<RatingInfo | null>(null);
 
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+
+  const { theme } = useTheme();
+  const gstyles = getGeneralStyles(theme);
 
   const fetchRatings = async () => {
     try {
@@ -178,7 +182,7 @@ const RatingsScreen: React.FC = () => {
     navigation.goBack();
   };
 
-  const downloadRatingsCsv = async(ratings: RatingDto[], filename = "ratings.csv") => {
+  const downloadRatingsCsv = async (ratings: RatingDto[], filename = "ratings.csv") => {
     const headers = [
       "ID",
       "Rating",
@@ -234,7 +238,14 @@ const RatingsScreen: React.FC = () => {
 
     return (
       <View style={{ flex: 1, width: "100%", padding: 10 }}>
-        <View style={{ flexDirection: "row", borderBottomWidth: 1, borderColor: "#ccc", paddingBottom: 5 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            borderBottomWidth: 1,
+            borderColor: rgbToRgba(theme.text, 0.6),
+            paddingBottom: 5,
+          }}
+        >
           <TouchableOpacity
             style={{ flex: 2, flexDirection: "row", alignItems: "center" }}
             onPress={() => handleSort("createdAt")}
@@ -268,7 +279,7 @@ const RatingsScreen: React.FC = () => {
               style={{
                 flexDirection: "row",
                 borderBottomWidth: 1,
-                borderColor: "#eee",
+                borderColor: rgbToRgba(theme.text, 0.3),
                 paddingVertical: 5,
               }}
             >
@@ -277,7 +288,7 @@ const RatingsScreen: React.FC = () => {
               <View style={{ flex: 1, alignItems: "center" }}>{getIconFromRating(item.rating, 0.04)}</View>
               {item.comment ? (
                 <TouchableOpacity style={{ flex: 1, alignItems: "center" }} onPress={() => setSelectedComment(item)}>
-                  <Icon source="comment" size={height * 0.04} />
+                  <Icon source="comment" size={height * 0.04} color={theme.text} />
                 </TouchableOpacity>
               ) : (
                 <Text style={[gstyles.text, { flex: 1, textAlign: "center" }]}>{item.comment || "-"}</Text>
@@ -299,23 +310,21 @@ const RatingsScreen: React.FC = () => {
       ) : (
         <View style={{ flex: 1, width: "100%", flexDirection: "column", alignItems: "center" }}>
           <View style={gstyles.fixedReturnButtonContainer}>
-            <View style={gstyles.shadowWrapper}>
-              <Button
-                mode="contained"
-                onPress={handleBack}
-                icon="arrow-left"
-                style={gstyles.returnButton}
-                labelStyle={{ color: "black", fontSize: width * 0.0175 }}
-              >
-                {"Atrás"}
-              </Button>
-            </View>
+            <Button
+              mode="contained"
+              onPress={handleBack}
+              icon="arrow-left"
+              style={gstyles.returnButton}
+              labelStyle={gstyles.returnButtonLabel}
+            >
+              {"Atrás"}
+            </Button>
           </View>
           <Text style={gstyles.title}>{"Calificaciones recibidas"}</Text>
           <View style={{ flexDirection: "row" }}>
-            <View style={styles.navigationIcon}>
+            <View style={[styles.navigationIcon, { backgroundColor: theme.background, borderColor: rgbToRgba(theme.primary, 0.5) }]}>
               <TouchableOpacity onPress={() => handleDownload()}>
-                <Icon source="file-download-outline" size={30} />
+                <Icon source="file-download-outline" size={30} color={theme.primary} />
               </TouchableOpacity>
             </View>
             <View style={{ width: "50%", flexDirection: "row", justifyContent: "space-between", marginBottom: "2%" }}>
@@ -332,6 +341,8 @@ const RatingsScreen: React.FC = () => {
                   selectedTextStyle={gstyles.text}
                   maxHeight={300}
                   itemTextStyle={gstyles.text}
+                  containerStyle={{ backgroundColor: theme.background }}
+                  activeColor={rgbToRgba(theme.primary, 0.7)}
                 />
               </View>
               <View style={{ width: "28%", marginHorizontal: 20 }}>
@@ -345,7 +356,8 @@ const RatingsScreen: React.FC = () => {
                   placeholder="Mes"
                   selectedTextStyle={gstyles.text}
                   maxHeight={120}
-                  containerStyle={{ height: height * 0.6 }}
+                  containerStyle={{ height: height * 0.6, backgroundColor: theme.background }}
+                  activeColor={rgbToRgba(theme.primary, 0.7)}
                   itemTextStyle={gstyles.text}
                 />
               </View>
@@ -360,7 +372,8 @@ const RatingsScreen: React.FC = () => {
                   placeholder="Mes"
                   selectedTextStyle={gstyles.text}
                   maxHeight={200}
-                  containerStyle={{ height: height * 0.6 }}
+                  containerStyle={{ height: height * 0.6, backgroundColor: theme.background }}
+                  activeColor={rgbToRgba(theme.primary, 0.7)}
                   itemTextStyle={gstyles.text}
                 />
               </View>
@@ -378,7 +391,7 @@ const RatingsScreen: React.FC = () => {
                 justifyContent: "space-between",
               }}
             >
-              <View style={styles.cardContainer}>
+              <View style={[styles.cardContainer, { borderColor: rgbToRgba(theme.text, 0.3) }]}>
                 <Text style={gstyles.subtitle2}>Promedio</Text>
                 <Text
                   style={[
@@ -389,11 +402,11 @@ const RatingsScreen: React.FC = () => {
                   {getAveraqeRating()}
                 </Text>
               </View>
-              <View style={styles.cardContainer}>
+              <View style={[styles.cardContainer, { borderColor: rgbToRgba(theme.text, 0.3) }]}>
                 <Text style={gstyles.subtitle2}>Calificaciones</Text>
                 <Text style={gstyles.subtitle}>{filteredRatings.length}</Text>
               </View>
-              <View style={styles.cardContainer}>
+              <View style={[styles.cardContainer, { borderColor: rgbToRgba(theme.text, 0.3) }]}>
                 <Text style={gstyles.subtitle2}>Mejor Promedio</Text>
                 {bestEmployee == null ? (
                   <Text style={gstyles.subtitle}>-</Text>
@@ -411,7 +424,7 @@ const RatingsScreen: React.FC = () => {
                   </View>
                 )}
               </View>
-              <View style={styles.cardContainer}>
+              <View style={[styles.cardContainer, { borderColor: rgbToRgba(theme.text, 0.3) }]}>
                 <Text style={gstyles.subtitle2}>Peor Promedio</Text>
                 {worstEmployee == null ? (
                   <Text style={gstyles.subtitle}>-</Text>
@@ -436,9 +449,9 @@ const RatingsScreen: React.FC = () => {
       )}
       <Modal visible={selectedComment !== null} transparent={true} animationType="fade">
         <View style={gstyles.modalOverlay}>
-          <View style={[styles.alertContainer, { backgroundColor: Colors.background }]}>
-            <Icon source={"comment-outline"} size={width * 0.035} />
-            <View style={{ marginVertical: 10, alignItems: "flex-start", width: "100%" }}>
+          <View style={[styles.alertContainer, { backgroundColor: theme.background }]}>
+            <Icon source={"comment-outline"} size={width * 0.035} color={theme.text}/>
+            <View style={{ marginVertical: 10, alignItems: "flex-start", width: "100%", gap: 5 }}>
               <Text style={gstyles.text}>
                 {"Fecha: " + (selectedComment != null && formatLocalDateTime(selectedComment.createdAt))}
               </Text>
@@ -482,7 +495,6 @@ const styles = StyleSheet.create({
   cardContainer: {
     marginVertical: "2%",
     borderWidth: 1,
-    borderColor: "#ccc",
     paddingVertical: height * 0.01,
     width: "80%",
     borderRadius: 10,
@@ -492,17 +504,10 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     marginHorizontal: 10,
-    borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 5,
-    backgroundColor: Colors.background,
   },
 });
 

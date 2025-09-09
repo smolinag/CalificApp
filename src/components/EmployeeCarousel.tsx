@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { RatingInfo } from "../models/RatingInfo";
-import { TouchableOpacity, View, Image, Text, StyleSheet, FlatList } from "react-native";
-import gstyles from "../styles/GeneralStyle";
-import { Colors } from "../styles/Theme";
+import { TouchableOpacity, View, StyleSheet, FlatList } from "react-native";
+import { getGeneralStyles } from "../styles/GeneralStyle";
 import { Icon } from "react-native-paper";
 import EmployeeCard from "./EmployeeCard";
+import { useTheme } from "../context/ThemeContext";
 
 const EmployeeCarousel: React.FC<{
   employees: RatingInfo[];
@@ -13,6 +13,9 @@ const EmployeeCarousel: React.FC<{
   const [page, setPage] = useState(0);
   const [numCols, setNumCols] = useState(0);
   const [numRows, setNumRows] = useState(0);
+
+  const { theme } = useTheme();
+  const gstyles = getGeneralStyles(theme);
 
   useEffect(() => {
     calculateRowsAndColumns(employees.length);
@@ -63,23 +66,17 @@ const EmployeeCarousel: React.FC<{
     <View style={styles.carouselContainer}>
       <View style={styles.navigationIcon}>
         {page > 0 && (
-          <View style={gstyles.roundButtonShadow}>
-            <TouchableOpacity onPress={() => setPage(page - 1)}>
-              <Icon source="chevron-left" size={60} />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity onPress={() => setPage(page - 1)}>
+            <Icon source="chevron-left" size={60} color={theme.primary} />
+          </TouchableOpacity>
         )}
       </View>
-      <View style={styles.gridContainer}>
-        {displayEmployees()}
-      </View>
+      <View style={styles.gridContainer}>{displayEmployees()}</View>
       <View style={styles.navigationIcon}>
         {page < Math.ceil(employees.length / (numRows * numCols)) - 1 && (
-          <View style={gstyles.roundButtonShadow}>
-            <TouchableOpacity onPress={() => setPage(page + 1)}>
-              <Icon source="chevron-right" size={60} />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity onPress={() => setPage(page + 1)}>
+            <Icon source="chevron-right" size={60} color={theme.primary} />
+          </TouchableOpacity>
         )}
       </View>
     </View>

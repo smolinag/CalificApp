@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import * as ImagePicker from "expo-image-picker";
 import { View, Text, Image, TouchableOpacity } from "react-native";
-import gstyles, { height, width } from "../../styles/GeneralStyle";
+import { getGeneralStyles, height, width } from "../../styles/GeneralStyle";
 import LoadingAnimation from "../../components/LoadingAnimation";
 import { Button, TextInput } from "react-native-paper";
 import { ParamListBase, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
@@ -11,6 +11,7 @@ import { EmployeeDto } from "../../models/EmployeeDto";
 import { ConfigProperties } from "../../utils/ConfigProperties";
 import { createEmployee, deleteEmployee, updateEmployee } from "../../queries/EmployeeQueries";
 import GeneralStatusModal from "../../components/GeneralStatusModal";
+import { useTheme } from "../../context/ThemeContext";
 
 type ParamList = {
   EmployeeScreen: {
@@ -34,6 +35,9 @@ const EmployeeScreen: React.FC = () => {
   const [actionStatus, setActionStatus] = useState<string | null>(null);
 
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+
+  const { theme } = useTheme();
+  const gstyles = getGeneralStyles(theme);
 
   useEffect(() => {}, []);
 
@@ -160,17 +164,15 @@ const EmployeeScreen: React.FC = () => {
     <View style={gstyles.container}>
       <Text style={gstyles.title}>{employee.employeeName ? "Editar Empleado" : "Crear Empleado"}</Text>
       <View style={gstyles.fixedReturnButtonContainer}>
-        <View style={gstyles.shadowWrapper}>
-          <Button
-            mode="contained"
-            onPress={handleBack}
-            icon="arrow-left"
-            style={gstyles.returnButton}
-            labelStyle={{ color: "black", fontSize: width * 0.0175 }}
-          >
-            {"Atrás"}
-          </Button>
-        </View>
+        <Button
+          mode="contained"
+          onPress={handleBack}
+          icon="arrow-left"
+          style={gstyles.returnButton}
+          labelStyle={gstyles.returnButtonLabel}
+        >
+          {"Atrás"}
+        </Button>
       </View>
       {loading ? (
         <LoadingAnimation message="Cargando empleado..." />
@@ -195,45 +197,39 @@ const EmployeeScreen: React.FC = () => {
           )}
           <View style={{ alignItems: "center" }}>
             <Text style={[gstyles.subtitle, { marginVertical: "0.5%" }]}>Foto</Text>
-            <View style={gstyles.shadowWrapper}>
-              <TouchableOpacity onPress={handlePickImage}>
-                <Image
-                  source={imageUrl === null || imageError ? require("../../../assets/Unknown.jpg") : { uri: imageUrl }}
-                  style={{ width: height * 0.35, height: height * 0.35, borderRadius: 10 }}
-                  resizeMode="cover"
-                  onError={() => setImageError(true)}
-                />
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity onPress={handlePickImage}>
+              <Image
+                source={imageUrl === null || imageError ? require("../../../assets/Unknown.jpg") : { uri: imageUrl }}
+                style={{ width: height * 0.35, height: height * 0.35, borderRadius: 10 }}
+                resizeMode="cover"
+                onError={() => setImageError(true)}
+              />
+            </TouchableOpacity>
             <View style={{ flexDirection: "row", justifyContent: "space-between", width: "40%", marginTop: "1%" }}>
               {employee.employeeName && (
-                <View style={gstyles.shadowWrapper}>
-                  <Button
-                    mode="contained"
-                    onPress={() => {
-                      handleDelete();
-                    }}
-                    style={[gstyles.generalButton]}
-                    labelStyle={{ fontSize: width * 0.0175 }}
-                    icon="delete"
-                  >
-                    {"Eliminar"}
-                  </Button>
-                </View>
-              )}
-              <View style={gstyles.shadowWrapper}>
                 <Button
                   mode="contained"
                   onPress={() => {
-                    handleAccept();
+                    handleDelete();
                   }}
                   style={[gstyles.generalButton]}
                   labelStyle={{ fontSize: width * 0.0175 }}
-                  disabled={employeeName === null || employeeName.trim() === ""}
+                  icon="delete"
                 >
-                  {employee.employeeName ? "Editar" : "Crear"}
+                  {"Eliminar"}
                 </Button>
-              </View>
+              )}
+              <Button
+                mode="contained"
+                onPress={() => {
+                  handleAccept();
+                }}
+                style={[gstyles.generalButton]}
+                labelStyle={{ fontSize: width * 0.0175 }}
+                disabled={employeeName === null || employeeName.trim() === ""}
+              >
+                {employee.employeeName ? "Editar" : "Crear"}
+              </Button>
             </View>
           </View>
         </View>
