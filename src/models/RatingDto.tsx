@@ -8,4 +8,6 @@ export interface RatingDto {
   raterName: string;
   ratingTimeMs?: number;
   createdAt?: string;
+  product?: string;
+  raterPhone: string;
 };

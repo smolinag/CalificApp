@@ -6,6 +6,7 @@ import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import * as SecureStore from "expo-secure-store";
 import { useTheme } from "../context/ThemeContext";
+import GeneralTextInput from "../components/GeneralTextInput";
 
 const InitialConfigurationScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
@@ -33,7 +34,7 @@ const InitialConfigurationScreen: React.FC = () => {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
       keyboardVerticalOffset={0} // adjust as needed for your header
     >
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -43,33 +44,30 @@ const InitialConfigurationScreen: React.FC = () => {
               style={{ flexDirection: "column", justifyContent: "space-between", alignItems: "center", width: "100%" }}
             >
               <Text style={gstyles.title}>{"Configuración Inicial"}</Text>
-              <Icon source="cog" size={40} color="#000" />
+              <Icon source="cog" size={40} color={theme.text} />
             </View>
-            <TextInput
-              mode="outlined"
+            <GeneralTextInput
+              onValueChange={(val) => setCompanyName(val)}
               label="Ingresa el nombre de la empresa"
-              style={[{ width: "90%", marginVertical: 5 }, gstyles.textInput]}
               value={companyName}
-              onChangeText={setCompanyName}
+              styleProps={{ width: "90%", marginVertical: 5 }}
             />
-            <TextInput
-              mode="outlined"
+            <GeneralTextInput
+              onValueChange={(val) => setDeviceId(val)}
               label="Ingresa el ID del dispositivo"
-              style={[{ width: "90%", marginVertical: 5 }, gstyles.textInput]}
               value={deviceId}
-              onChangeText={setDeviceId}
+              styleProps={{ width: "90%", marginVertical: 5 }}
             />
-            <TextInput
-              mode="outlined"
-              label="Ingresa un pin"
-              keyboardType="numeric"
-              style={[{ width: "90%", marginVertical: 5 }, gstyles.textInput]}
-              value={pin}
-              onChangeText={(text) => {
+            <GeneralTextInput
+              onValueChange={(val) => {
                 // Only allow up to 4 digits and numeric input
-                const filtered = text.replace(/[^0-9]/g, "").slice(0, 4);
+                const filtered = val.replace(/[^0-9]/g, "").slice(0, 4);
                 setPin(filtered);
               }}
+              label="Ingresa un PIN"
+              value={pin}
+              styleProps={{ width: "90%", marginVertical: 5 }}
+              keyboardType="numeric"
             />
             <Button
               mode="contained"

@@ -3,7 +3,6 @@ import { RatingInfo } from "../models/RatingInfo";
 import { ConfigProperties } from "../utils/ConfigProperties";
 import { TouchableOpacity, View, Image, Text, StyleSheet } from "react-native";
 import { height, width } from "../styles/GeneralStyle";
-import { Colors } from "../styles/Theme";
 import { useTheme } from "../context/ThemeContext";
 import { rgbToRgba } from "../utils/Utils";
 
@@ -20,17 +19,14 @@ const EmployeeCard: React.FC<{
   const { theme } = useTheme();
 
   const finalUri = encodeURI(
-    `${ConfigProperties.s3BucketUrl.replace(/\/$/, "")}/${ratingInfo.photoUrl.replace(/^\//, "")}`
+    `${ConfigProperties.s3BucketUrl.replace(/\/$/, "")}/${ratingInfo.photoUrl.replace(/^\//, "")}${
+      ratingInfo.version ? "?v=" + ratingInfo.version : ""
+    }`
   );
 
   const displayEmployee = () => {
     return (
-      <View
-        style={[
-          styles.employeeContainer,
-          { backgroundColor: rgbToRgba(theme.primary, 0.2) },
-        ]}
-      >
+      <View style={[styles.employeeContainer, { backgroundColor: rgbToRgba(theme.primary, 0.2) }]}>
         <Image
           source={imageError ? require("../../assets/Unknown.jpg") : { uri: finalUri }}
           style={[styles.image, { width: height * imageSizeProportion, height: height * imageSizeProportion }]}

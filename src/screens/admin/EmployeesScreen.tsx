@@ -36,7 +36,7 @@ const EmployeesScreen: React.FC = () => {
       const companyName = await SecureStore.getItemAsync("companyName");
       const response = await getEmployees(companyName);
       if (response && response.data) {
-        console.log("Employees fetched: " + response.data.length);
+        console.log("Employees fetched: ", response.data.length);
         setEmployees(response.data);
       }
     } catch (error) {
@@ -97,6 +97,7 @@ const EmployeesScreen: React.FC = () => {
                 photoUrl: emp.photoUrl,
                 ratingStartedAt: undefined,
                 companyLogoUrl: "",
+                version: emp.version
               }))}
               onPress={(employee) => handleEmployeeSelect(employee)}
             />

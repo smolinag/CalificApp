@@ -31,6 +31,7 @@ export const getGeneralStyles = (theme: Theme) => {
     },
     textInput: {
       fontSize: 0.03 * height,
+      backgroundColor: theme.background,
     },
     container: {
       flex: 1,
@@ -42,7 +43,7 @@ export const getGeneralStyles = (theme: Theme) => {
     },
     fixedLogoContainer: {
       position: "absolute",
-      bottom: height * 0.05,
+      bottom: height * 0.04,
       right: 10,
       zIndex: 10,
     },

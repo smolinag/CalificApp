@@ -28,7 +28,9 @@ const EmployeeScreen: React.FC = () => {
   const [employeeName, setEmployeeName] = useState<string | null>(employee.employeeName);
   const [imageUrl, setImageUrl] = useState<string | null>(
     employee.photoUrl !== ""
-      ? `${ConfigProperties.s3BucketUrl.replace(/\/$/, "")}/${employee.photoUrl.replace(/^\//, "")}`
+      ? `${ConfigProperties.s3BucketUrl.replace(/\/$/, "")}/${employee.photoUrl.replace(/^\//, "")}${
+          employee.version ? "?v=" + employee.version : ""
+        }`
       : null
   );
   const [selectedImage, setSelectedImage] = useState<ImagePicker.ImagePickerAsset | null>(null);

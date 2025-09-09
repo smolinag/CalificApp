@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { RatingInfo } from "../models/RatingInfo";
 import { TouchableOpacity, View, StyleSheet, FlatList } from "react-native";
-import { getGeneralStyles } from "../styles/GeneralStyle";
 import { Icon } from "react-native-paper";
 import EmployeeCard from "./EmployeeCard";
 import { useTheme } from "../context/ThemeContext";
@@ -15,7 +14,6 @@ const EmployeeCarousel: React.FC<{
   const [numRows, setNumRows] = useState(0);
 
   const { theme } = useTheme();
-  const gstyles = getGeneralStyles(theme);
 
   useEffect(() => {
     calculateRowsAndColumns(employees.length);

@@ -6,4 +6,5 @@ export interface EmployeeDto {
   createdAt: string;
   fileContent?: string; // Base64 encoded image content
   contentType?: string; 
+  version?: number;
 };

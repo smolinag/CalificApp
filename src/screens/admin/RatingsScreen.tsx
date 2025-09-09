@@ -36,7 +36,7 @@ const RatingsScreen: React.FC = () => {
   const [employeePickerItems, setEmployeePickerItems] = useState<PickerDto[]>([]);
   const [sortField, setSortField] = useState<SortField>("createdAt");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
-  const [selectedComment, setSelectedComment] = useState<RatingDto | null>(null);
+  const [selectedRatingDetails, setSelectedRatingDetails] = useState<RatingDto | null>(null);
   const [filteredRatings, setFilteredRatings] = useState<RatingDto[]>([]);
   const [employees, setEmployees] = useState<RatingInfo[]>([]);
   const [bestEmployee, setBestEmployee] = useState<RatingInfo | null>(null);
@@ -74,7 +74,6 @@ const RatingsScreen: React.FC = () => {
       const companyName = await SecureStore.getItemAsync("companyName");
       const response = await getEmployees(companyName);
       if (response && response.data) {
-        console.log("Employees fetched:", response.data);
         let employeeList = [{ label: "Todos", value: "Todos" }];
         employeeList = employeeList.concat(
           response.data.map((emp: any) => ({ label: emp.employeeName, value: emp.employeeName }))
@@ -134,7 +133,7 @@ const RatingsScreen: React.FC = () => {
   };
 
   const handleCloseModal = () => {
-    setSelectedComment(null);
+    setSelectedRatingDetails(null);
   };
 
   const getAveraqeRating = (): string => {
@@ -168,8 +167,6 @@ const RatingsScreen: React.FC = () => {
         worstEmployee = emp;
       }
     }
-    console.log("Best employee:", bestEmployee, "with average rating:", bestAverage);
-    console.log("Worst employee:", worstEmployee, "with average rating:", worstAverage);
     let bestEmp = employees.find((e) => e.employeeName === bestEmployee);
     let worstEmp = employees.find((e) => e.employeeName === worstEmployee);
     bestEmp.rating = bestAverage;
@@ -267,7 +264,7 @@ const RatingsScreen: React.FC = () => {
             <Text style={[gstyles.text, { fontWeight: "bold" }]}>Rating</Text>
             {renderSortIcon("rating")}
           </TouchableOpacity>
-          <Text style={[gstyles.text, { flex: 1, fontWeight: "bold" }]}>Comentario</Text>
+          <Text style={[gstyles.text, { flex: 1, fontWeight: "bold" }]}>Detalles</Text>
         </View>
         <FlatList
           data={sortedRatings}
@@ -285,14 +282,13 @@ const RatingsScreen: React.FC = () => {
             >
               <Text style={[gstyles.text, { flex: 2 }]}>{formatLocalDateTime(item.createdAt)}</Text>
               <Text style={[gstyles.text, { flex: 2 }]}>{item.employeeName}</Text>
-              <View style={{ flex: 1, alignItems: "center" }}>{getIconFromRating(item.rating, 0.04)}</View>
-              {item.comment ? (
-                <TouchableOpacity style={{ flex: 1, alignItems: "center" }} onPress={() => setSelectedComment(item)}>
-                  <Icon source="comment" size={height * 0.04} color={theme.text} />
-                </TouchableOpacity>
-              ) : (
-                <Text style={[gstyles.text, { flex: 1, textAlign: "center" }]}>{item.comment || "-"}</Text>
-              )}
+              <View style={{ flex: 1, alignItems: "flex-start" }}>{getIconFromRating(item.rating, 0.04)}</View>
+              <TouchableOpacity
+                style={{ flex: 1, alignItems: "flex-start" }}
+                onPress={() => setSelectedRatingDetails(item)}
+              >
+                <Icon source="magnify-plus-outline" size={height * 0.04} color={theme.text} />
+              </TouchableOpacity>
             </View>
           )}
           ListEmptyComponent={
@@ -322,7 +318,12 @@ const RatingsScreen: React.FC = () => {
           </View>
           <Text style={gstyles.title}>{"Calificaciones recibidas"}</Text>
           <View style={{ flexDirection: "row" }}>
-            <View style={[styles.navigationIcon, { backgroundColor: theme.background, borderColor: rgbToRgba(theme.primary, 0.5) }]}>
+            <View
+              style={[
+                styles.navigationIcon,
+                { backgroundColor: theme.background, borderColor: rgbToRgba(theme.primary, 0.5) },
+              ]}
+            >
               <TouchableOpacity onPress={() => handleDownload()}>
                 <Icon source="file-download-outline" size={30} color={theme.primary} />
               </TouchableOpacity>
@@ -447,24 +448,37 @@ const RatingsScreen: React.FC = () => {
           </View>
         </View>
       )}
-      <Modal visible={selectedComment !== null} transparent={true} animationType="fade">
+      <Modal visible={selectedRatingDetails !== null} transparent={true} animationType="fade">
         <View style={gstyles.modalOverlay}>
           <View style={[styles.alertContainer, { backgroundColor: theme.background }]}>
-            <Icon source={"comment-outline"} size={width * 0.035} color={theme.text}/>
             <View style={{ marginVertical: 10, alignItems: "flex-start", width: "100%", gap: 5 }}>
               <Text style={gstyles.text}>
-                {"Fecha: " + (selectedComment != null && formatLocalDateTime(selectedComment.createdAt))}
+                {"Fecha: " + (selectedRatingDetails != null && formatLocalDateTime(selectedRatingDetails.createdAt))}
               </Text>
               <Text style={gstyles.text}>
-                {"Empleado: " + (selectedComment != null && selectedComment.employeeName)}
-              </Text>
-              <Text style={gstyles.text}>{"Comentario: " + (selectedComment != null && selectedComment.comment)}</Text>
-              <Text style={gstyles.text}>{"Calificación: " + (selectedComment != null && selectedComment.rating)}</Text>
-              <Text style={gstyles.text}>
-                {"Calificador: " + (selectedComment != null && selectedComment.raterName)}
+                {"Empleado: " + (selectedRatingDetails != null && selectedRatingDetails.employeeName)}
               </Text>
               <Text style={gstyles.text}>
-                {"Tiempo de calificación (s): " + (selectedComment != null && selectedComment.ratingTimeMs / 1000)}
+                {"Calificación: " + (selectedRatingDetails != null && selectedRatingDetails.rating)}
+              </Text>
+              <Text style={gstyles.text}>
+                {"Comentario: " + (selectedRatingDetails != null && selectedRatingDetails.comment)}
+              </Text>
+              <Text style={gstyles.text}>
+                {"Calificador: " + (selectedRatingDetails != null && selectedRatingDetails.raterName)}
+              </Text>
+              <Text style={gstyles.text}>
+                {"Teléfono: " + (selectedRatingDetails?.raterPhone ? selectedRatingDetails.raterPhone : "")}
+              </Text>
+              <Text style={gstyles.text}>
+                {"Producto: " + (selectedRatingDetails?.product ? selectedRatingDetails.product : "")}
+              </Text>
+              <Text style={gstyles.text}>
+                {"Dispositivo: " + (selectedRatingDetails != null && selectedRatingDetails.deviceId)}
+              </Text>
+              <Text style={gstyles.text}>
+                {"Tiempo de calificación (s): " +
+                  (selectedRatingDetails != null && selectedRatingDetails.ratingTimeMs / 1000)}
               </Text>
             </View>
 
