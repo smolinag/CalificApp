@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import * as ImagePicker from "expo-image-picker";
 import { View, Text, Image, TouchableOpacity } from "react-native";
@@ -41,8 +41,6 @@ const EmployeeScreen: React.FC = () => {
   const { theme } = useTheme();
   const gstyles = getGeneralStyles(theme);
 
-  useEffect(() => {}, []);
-
   const handlePickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: "images",
@@ -71,11 +69,13 @@ const EmployeeScreen: React.FC = () => {
       // Update existing employee
       setLoading(true);
       try {
+        const deviceId = await SecureStore.getItemAsync("deviceId");
         const updatedEmployee: EmployeeDto = {
           ...employee,
           employeeName: employeeName || employee.employeeName,
           fileContent: selectedImage?.base64,
           contentType: selectedImage ? extractFileExtension(selectedImage.uri) : employee.contentType,
+          updatedFromDeviceId: deviceId
         };
         const response = await updateEmployee(updatedEmployee, selectedImage !== null);
         if (response && response.status === 200) {
@@ -94,6 +94,7 @@ const EmployeeScreen: React.FC = () => {
       setLoading(true);
       try {
         const companyName = await SecureStore.getItemAsync("companyName");
+        const deviceId = await SecureStore.getItemAsync("deviceId");
         const newEmployee: EmployeeDto = {
           id: companyName,
           rangeId: "", // Backend should set this
@@ -102,6 +103,7 @@ const EmployeeScreen: React.FC = () => {
           contentType: extractFileExtension(selectedImage?.uri || ""),
           photoUrl: "", // Backend should set this
           createdAt: new Date().toISOString(),
+          createdFromDeviceId: deviceId
         };
         const response = await createEmployee(newEmployee);
         if (response && response.status === 201) {

@@ -12,6 +12,7 @@ export const getGeneralStyles = (theme: Theme) => {
       textAlign: "center",
       marginVertical: 0.01 * height,
       color: theme.primary,
+      fontFamily: "Cambridge",
     },
     subtitle: {
       fontSize: 0.035 * height,
@@ -73,6 +74,10 @@ export const getGeneralStyles = (theme: Theme) => {
       paddingHorizontal: "1%",
       paddingVertical: "0.2%",
       backgroundColor: rgbToRgba(theme.primary, 0.75),
+    },
+    generalButtonLabel: {
+      color: theme.text,
+      fontSize: width * 0.0175,
     },
     modalOverlay: {
       flex: 1,

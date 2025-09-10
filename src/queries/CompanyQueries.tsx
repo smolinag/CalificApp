@@ -15,3 +15,15 @@ export const getCompany = async (companyName: string): Promise<AxiosResponse | n
     return null;
   }
 };
+
+export const updateCompany = async(companyToUpdate: CompanyDto, logoChanged: boolean): Promise<AxiosResponse | null> => {
+  try {
+    const response = await axios.put(ConfigProperties.serverUrl + companyPath, companyToUpdate, {
+      params: { logoChanged: logoChanged },
+    });
+    return response;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};

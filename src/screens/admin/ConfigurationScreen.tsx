@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Image } from "react-native";
 import { Button, Icon } from "react-native-paper";
 import * as SecureStore from "expo-secure-store";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
@@ -7,14 +7,14 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import Constants from "expo-constants";
 import GeneralStatusModal from "../../components/GeneralStatusModal";
 import { useTheme } from "../../context/ThemeContext";
-import { getGeneralStyles, width } from "../../styles/GeneralStyle";
+import { getGeneralStyles } from "../../styles/GeneralStyle";
 
 const ConfigurationScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
   const [showResetModal, setShowResetModal] = useState(false);
 
-  const { theme, reloadTheme } = useTheme();
+  const { theme, logoUrl } = useTheme();
   const gstyles = getGeneralStyles(theme);
 
   const appVersion = Constants.expoConfig?.version;
@@ -44,13 +44,13 @@ const ConfigurationScreen: React.FC = () => {
   };
 
   const handleTheme = () => {
-    reloadTheme();
-  }
+    navigation.navigate("Theme");
+  };
 
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
       keyboardVerticalOffset={0} // adjust as needed for your header
     >
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -83,7 +83,7 @@ const ConfigurationScreen: React.FC = () => {
                   handleShowRatings();
                 }}
                 style={[gstyles.generalButton, { marginTop: 10 }]}
-                labelStyle={{ fontSize: width * 0.0175 }}
+                labelStyle={gstyles.generalButtonLabel}
               >
                 {"Calificaciones"}
               </Button>
@@ -93,7 +93,7 @@ const ConfigurationScreen: React.FC = () => {
                   handleShowEmployees();
                 }}
                 style={[gstyles.generalButton, { marginTop: 10 }]}
-                labelStyle={{ fontSize: width * 0.0175 }}
+                labelStyle={gstyles.generalButtonLabel}
               >
                 {"Empleados"}
               </Button>
@@ -103,7 +103,7 @@ const ConfigurationScreen: React.FC = () => {
                   handleTheme();
                 }}
                 style={[gstyles.generalButton, { marginTop: 10 }]}
-                labelStyle={{ fontSize: width * 0.0175 }}
+                labelStyle={gstyles.generalButtonLabel}
               >
                 {"Apariencia"}
               </Button>
@@ -113,12 +113,21 @@ const ConfigurationScreen: React.FC = () => {
                   handleResetApp();
                 }}
                 style={[gstyles.generalButton, { marginTop: 10 }]}
-                labelStyle={{ fontSize: width * 0.0175 }}
+                labelStyle={gstyles.generalButtonLabel}
               >
                 {"Reset App"}
               </Button>
               <Text style={gstyles.text}>{"Versión: " + appVersion}</Text>
             </View>
+          </View>
+          <View style={gstyles.fixedLogoContainer}>
+            {logoUrl && (
+              <Image
+                source={{ uri: encodeURI(logoUrl) }} // update path as needed
+                style={gstyles.logoImage}
+                resizeMode="contain"
+              />
+            )}
           </View>
           <GeneralStatusModal
             isVisible={showResetModal}

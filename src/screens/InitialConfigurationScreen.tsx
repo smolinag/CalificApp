@@ -75,7 +75,7 @@ const InitialConfigurationScreen: React.FC = () => {
                 handleSubmit();
               }}
               style={[gstyles.generalButton, { marginTop: 10, alignSelf: "center" }]}
-              labelStyle={{ fontSize: width * 0.0175 }}
+              labelStyle={gstyles.generalButtonLabel}
               disabled={!companyName || !deviceId || !pin}
             >
               {"Continuar"}

@@ -7,4 +7,6 @@ export interface EmployeeDto {
   fileContent?: string; // Base64 encoded image content
   contentType?: string; 
   version?: number;
+  createdFromDeviceId?: string;
+  updatedFromDeviceId?: string;
 };

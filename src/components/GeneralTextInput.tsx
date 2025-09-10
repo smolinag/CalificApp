@@ -9,7 +9,7 @@ interface LoadingAnimationProps {
   label: string;
   value: string;
   onValueChange: (val: string) => void;
-  styleProps: TextStyle;
+  styleProps?: TextStyle;
   keyboardType?: KeyboardTypeOptions;
   numberOfLines?: number;
 }

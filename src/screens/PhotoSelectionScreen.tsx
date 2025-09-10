@@ -2,13 +2,12 @@ import React, { useCallback, useEffect, useState } from "react";
 import { View, StyleSheet, Text, TouchableOpacity, Image, Modal } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { ParamListBase, useFocusEffect, useNavigation } from "@react-navigation/native";
-import { Button, Icon, TextInput } from "react-native-paper";
+import { Button, Icon } from "react-native-paper";
 import * as SecureStore from "expo-secure-store";
 
 import { getEmployees } from "../queries/EmployeeQueries";
 import { getGeneralStyles } from "../styles/GeneralStyle";
 import { RatingInfo } from "../models/RatingInfo";
-import { ConfigProperties } from "../utils/ConfigProperties";
 import LoadingAnimation from "../components/LoadingAnimation";
 import EmployeeCarousel from "../components/EmployeeCarousel";
 import { useTheme } from "../context/ThemeContext";
@@ -18,19 +17,17 @@ import GeneralTextInput from "../components/GeneralTextInput";
 const PhotoSelectionScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const [employees, setEmployees] = useState<RatingInfo[]>([]);
-  const [logoUrl, setLogoUrl] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [inputPassword, setInputPassword] = useState("");
   const [pinError, setPinError] = useState(false);
 
-  const { theme } = useTheme();
+  const { theme, logoUrl } = useTheme();
   const gstyles = getGeneralStyles(theme);
 
   const fetchEmployees = async () => {
     const companyName = await SecureStore.getItemAsync("companyName");
-    const logoUrl = `${ConfigProperties.s3BucketUrl.replace(/\/$/, "")}/${companyName}/logo.png?v=1`;
-    setLogoUrl(logoUrl);
+    console.log(theme)
     setLoading(true);
     const response = await getEmployees(companyName);
     if (response && response.data) {
@@ -38,7 +35,6 @@ const PhotoSelectionScreen: React.FC = () => {
         employeeName: employee.employeeName,
         photoUrl: employee.photoUrl,
         ratingStartedAt: undefined,
-        companyLogoUrl: logoUrl,
         version: employee.version,
       }));
       console.log("Fetched employees: " + employeeData.length);
@@ -65,14 +61,8 @@ const PhotoSelectionScreen: React.FC = () => {
 
   useFocusEffect(
     useCallback(() => {
-      let isActive = true;
-
       fetchEmployees();
-
-      return () => {
-        isActive = false;
-      };
-    }, []) // no deps here
+    }, []) 
   );
 
   const handlePinSubmit = async () => {
@@ -121,7 +111,6 @@ const PhotoSelectionScreen: React.FC = () => {
             source={{ uri: encodeURI(logoUrl) }} // update path as needed
             style={gstyles.logoImage}
             resizeMode="contain"
-            onError={() => setLogoUrl("")}
           />
         )}
       </View>

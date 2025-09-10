@@ -6,6 +6,5 @@ export interface RatingInfo {
   raterName?: string;
   ratingStartedAt?: number;
   ratingCompletedAt?: number;
-  companyLogoUrl?: string;
   version?: number;
 };

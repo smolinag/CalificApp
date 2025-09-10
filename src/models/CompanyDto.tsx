@@ -6,4 +6,6 @@ export interface CompanyDto {
   theme?: string;
   updatedAt?: string;
   updatedFromDeviceId?: string;
+  fileContent?: string; // Base64 encoded image content
+  contentType?: string; 
 };

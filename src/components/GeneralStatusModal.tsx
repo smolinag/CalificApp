@@ -55,7 +55,7 @@ const GeneralStatusModal: React.FC<{
                   onPress2();
                 }}
                 style={[gstyles.generalButton, { marginTop: 10, marginHorizontal: 5 }]}
-                labelStyle={{ fontSize: width * 0.0175 }}
+                labelStyle={gstyles.generalButtonLabel}
               >
                 {button2Text}
               </Button>
@@ -66,7 +66,7 @@ const GeneralStatusModal: React.FC<{
                 onPress1();
               }}
               style={[gstyles.generalButton, { marginTop: 10, marginHorizontal: 5 }]}
-              labelStyle={{ fontSize: width * 0.0175 }}
+              labelStyle={gstyles.generalButtonLabel}
             >
               {button1Text}
             </Button>

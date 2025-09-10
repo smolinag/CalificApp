@@ -10,15 +10,15 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import { TextInput, Button } from "react-native-paper";
+import { Button } from "react-native-paper";
 import * as SecureStore from "expo-secure-store";
 import { ParamListBase, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-import { getGeneralStyles, height, width } from "../styles/GeneralStyle";
+import { getGeneralStyles, height } from "../styles/GeneralStyle";
 import { RatingInfo } from "../models/RatingInfo";
 import LoadingAnimation from "../components/LoadingAnimation";
-import { getIconFromRating, rgbToRgba } from "../utils/Utils";
+import { getIconFromRating } from "../utils/Utils";
 import { postRating } from "../queries/RatingQueries";
 import GeneralStatusModal from "../components/GeneralStatusModal";
 import { useTheme } from "../context/ThemeContext";
@@ -43,7 +43,7 @@ const CommentsScreen: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [ratingPostStatus, setRatingPostStatus] = useState("");
 
-  const { theme } = useTheme();
+  const { theme, logoUrl } = useTheme();
   const gstyles = getGeneralStyles(theme);
 
   const handleSubmit = async () => {
@@ -160,7 +160,7 @@ const CommentsScreen: React.FC = () => {
                     handleSubmit();
                   }}
                   style={[gstyles.generalButton, { marginTop: 10 }]}
-                  labelStyle={{ fontSize: width * 0.0175 }}
+                  labelStyle={gstyles.generalButtonLabel}
                 >
                   {"Finalizar"}
                 </Button>
@@ -179,9 +179,9 @@ const CommentsScreen: React.FC = () => {
               widthProportion={0.4}
             />
             <View style={gstyles.fixedLogoContainer}>
-              {ratingInfo.companyLogoUrl && (
+              {logoUrl && (
                 <Image
-                  source={{ uri: encodeURI(ratingInfo.companyLogoUrl) }} // update path as needed
+                  source={{ uri: encodeURI(logoUrl) }} // update path as needed
                   style={gstyles.logoImage}
                   resizeMode="contain"
                 />

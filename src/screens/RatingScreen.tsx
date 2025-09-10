@@ -21,7 +21,7 @@ const RatingScreen: React.FC = () => {
   const route = useRoute<RouteProp<ParamList, "RatingScreen">>();
   const { ratingInfo } = route.params;
 
-  const { theme } = useTheme();
+  const { theme, logoUrl } = useTheme();
   const gstyles = getGeneralStyles(theme);
 
   const handleRating = (value: number) => {
@@ -87,9 +87,9 @@ const RatingScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
       <View style={gstyles.fixedLogoContainer}>
-        {ratingInfo.companyLogoUrl && (
+        {logoUrl && (
           <Image
-            source={{ uri: encodeURI(ratingInfo.companyLogoUrl) }} // update path as needed
+            source={{ uri: encodeURI(logoUrl) }} // update path as needed
             style={gstyles.logoImage}
             resizeMode="contain"
           />
