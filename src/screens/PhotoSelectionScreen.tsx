@@ -114,6 +114,15 @@ const PhotoSelectionScreen: React.FC = () => {
           />
         )}
       </View>
+      <View style={gstyles.fixedCalificappLogoContainer}>
+        {logoUrl && (
+          <Image
+            source={require("../../assets/CalificAppLogo_borderW.png")} // update path as needed
+            style={gstyles.calificappLogoImage}
+            resizeMode="contain"
+          />
+        )}
+      </View>
       <Modal visible={modalVisible} transparent={true} animationType="fade">
         <View style={gstyles.modalOverlay}>
           <View style={[styles.alertContainer, { backgroundColor: theme.background }]}>

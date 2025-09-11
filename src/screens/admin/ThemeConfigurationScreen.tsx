@@ -54,6 +54,22 @@ const ThemeConfigurationScreen: React.FC = () => {
   };
 
   const handleAccept = async () => {
+    if (!validateHexColor(backgroundColor)) {
+      setStatus("Formato de color inválido para el fondo. Usa formato HEX, por ejemplo: #RRGGBB o #RGB");
+      return;
+    }
+    if (!validateHexColor(primaryColor)) {
+      setStatus("Formato de color inválido para el color principal. Usa formato HEX, por ejemplo: #RRGGBB o #RGB");
+      return;
+    }
+    if (!validateHexColor(textColor)) {
+      setStatus("Formato de color inválido para el texto. Usa formato HEX, por ejemplo: #RRGGBB o #RGB");
+      return;
+    }
+    if (!selectedLogoImage && theme.background === backgroundColor && theme.primary === primaryColor && theme.text === textColor) {
+      setStatus("Success");
+      return;
+    }
     setLoading(true);
     const companyName = await SecureStore.getItemAsync("companyName");
     const deviceId = await SecureStore.getItemAsync("deviceId");
@@ -71,18 +87,23 @@ const ThemeConfigurationScreen: React.FC = () => {
       };
       const response = await updateCompany(companyToUpdate, selectedLogoImage !== null);
       if (response.status !== 200) {
-        setStatus("Error");
+        setStatus("No se pudo actualizar el tema y la apariencia. Inténtalo de nuevo.");
       } else {
         setStatus("Success");
         reloadTheme();
       }
     } catch (e) {
       console.error("Error updating theme", e);
-      setStatus("Error");
+      setStatus("No se pudo actualizar el tema y la apariencia. Inténtalo de nuevo.");
     } finally {
       setLoading(false);
     }
   };
+
+  const validateHexColor = (color: string) => {
+    const hexRegex = /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/;
+    return hexRegex.test(color);
+  }
 
   return (
     <KeyboardAvoidingView
@@ -180,7 +201,7 @@ const ThemeConfigurationScreen: React.FC = () => {
           message={
             status === "Success"
               ? "Tema y Apariencia actualizados exitosamente"
-              : "Error al actualizar el Tema y la Apariencia"
+              : status
           }
           button1Text="Aceptar"
           onPress1={() => {            

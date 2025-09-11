@@ -52,6 +52,16 @@ export const getGeneralStyles = (theme: Theme) => {
       width: width * 0.1,
       height: width * 0.1,
     },
+    fixedCalificappLogoContainer: {
+      position: "absolute",
+      bottom: height * 0.04,
+      left: 10,
+      zIndex: 10,
+    },
+    calificappLogoImage: {
+      width: width * 0.075,
+      height: width * 0.075,
+    },
     fixedReturnButtonContainer: {
       position: "absolute",
       top: height * 0.075,
