@@ -41,7 +41,7 @@ const PhotoSelectionScreen: React.FC = () => {
       setEmployees(employeeData);
       setLoading(false);
     } else {
-      console.error("Failed to fetch employees");
+      console.error("Failed to fetch employees", response);
     }
   };
 

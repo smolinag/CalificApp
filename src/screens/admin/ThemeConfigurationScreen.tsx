@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -14,9 +14,8 @@ import * as ImagePicker from "expo-image-picker";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useTheme } from "../../context/ThemeContext";
-import { getGeneralStyles, height, width } from "../../styles/GeneralStyle";
+import { getGeneralStyles, height } from "../../styles/GeneralStyle";
 import GeneralTextInput from "../../components/GeneralTextInput";
-import { ConfigProperties } from "../../utils/ConfigProperties";
 import { rgbToRgba } from "../../utils/Utils";
 import { Button } from "react-native-paper";
 import { updateCompany } from "../../queries/CompanyQueries";

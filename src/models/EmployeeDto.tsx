@@ -9,4 +9,6 @@ export interface EmployeeDto {
   version?: number;
   createdFromDeviceId?: string;
   updatedFromDeviceId?: string;
+  updatedFromDeviceAlias?: string;
+  createdFromDeviceAlias?: string;
 };

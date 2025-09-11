@@ -11,10 +11,10 @@ export interface Theme {
 }
 
 const defaultTheme: Theme = {
-  primary: "#3498db",
+  primary: "#54758b",
   secondary: "#2ecc71",
-  background: "#e2e2e2ff",
-  text: "#000000",
+  background: "#cacaca",
+  text: "#1d1d1d",
 };
 
 const ThemeContext = createContext<{
@@ -48,7 +48,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
       const companyVersion = companyInfo?.data?.version;
       if (!companyVersion) {
-        console.log("No version found for company, using default.");
+        console.log("No version found for company, using default logo.");
+        setLogoUrl("");
       } else {
         console.log(`Version ${companyVersion} for company ${companyName}`);
         const logoUrl = `${ConfigProperties.s3BucketUrl.replace(/\/$/, "")}/${companyName}/logo.png?v=${companyVersion}`;

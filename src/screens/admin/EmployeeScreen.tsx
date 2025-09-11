@@ -70,12 +70,19 @@ const EmployeeScreen: React.FC = () => {
       setLoading(true);
       try {
         const deviceId = await SecureStore.getItemAsync("deviceId");
+        const deviceAlias = await SecureStore.getItemAsync("deviceAlias");
+        if (!deviceId) {
+          setActionStatus("updateError");
+          setLoading(false);
+          return;
+        }
         const updatedEmployee: EmployeeDto = {
           ...employee,
           employeeName: employeeName || employee.employeeName,
           fileContent: selectedImage?.base64,
           contentType: selectedImage ? extractFileExtension(selectedImage.uri) : employee.contentType,
-          updatedFromDeviceId: deviceId
+          updatedFromDeviceId: deviceId,
+          updatedFromDeviceAlias: deviceAlias || ""
         };
         const response = await updateEmployee(updatedEmployee, selectedImage !== null);
         if (response && response.status === 200) {
@@ -95,6 +102,12 @@ const EmployeeScreen: React.FC = () => {
       try {
         const companyName = await SecureStore.getItemAsync("companyName");
         const deviceId = await SecureStore.getItemAsync("deviceId");
+        const deviceAlias = await SecureStore.getItemAsync("deviceAlias");
+        if (!companyName || !deviceId || !employeeName) {
+          setActionStatus("createError");
+          setLoading(false);
+          return;
+        }
         const newEmployee: EmployeeDto = {
           id: companyName,
           rangeId: "", // Backend should set this
@@ -103,7 +116,8 @@ const EmployeeScreen: React.FC = () => {
           contentType: extractFileExtension(selectedImage?.uri || ""),
           photoUrl: "", // Backend should set this
           createdAt: new Date().toISOString(),
-          createdFromDeviceId: deviceId
+          createdFromDeviceId: deviceId,
+          createdFromDeviceAlias: deviceAlias || ""
         };
         const response = await createEmployee(newEmployee);
         if (response && response.status === 201) {

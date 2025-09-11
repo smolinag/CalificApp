@@ -51,33 +51,45 @@ const CommentsScreen: React.FC = () => {
     ratingInfo.comments = comments;
     const companyName = await SecureStore.getItemAsync("companyName");
     const deviceId = await SecureStore.getItemAsync("deviceId");
-
-    const response = await postRating({
-      id: companyName,
-      rating: ratingInfo.rating,
-      comment: comments,
-      product: product,
-      employeeName: ratingInfo.employeeName,
-      deviceId: deviceId,
-      date: new Date().toISOString(),
-      raterName: raterName,
-      ratingTimeMs: new Date().getTime() - ratingInfo.ratingStartedAt!,
-      raterPhone: raterPhone,
-    });
-    if (response.status !== 201) {
-      console.error("Error posting rating:", response.statusText);
+    const deviceAlias = await SecureStore.getItemAsync("deviceAlias");
+    if (!companyName || !deviceId) {
+      console.error("Company name or device ID not found in secure storage.");
+      setLoading(false);
       setRatingPostStatus("error");
     } else {
-      console.log("Rating posted successfully:", response.data);
-      setRatingPostStatus("success");
+      try {
+        const response = await postRating({
+          id: companyName,
+          rating: ratingInfo.rating,
+          comment: comments,
+          product: product,
+          employeeName: ratingInfo.employeeName,
+          deviceId: deviceId,
+          date: new Date().toISOString(),
+          raterName: raterName,
+          ratingTimeMs: new Date().getTime() - ratingInfo.ratingStartedAt!,
+          raterPhone: raterPhone,
+          deviceAlias: deviceAlias || "",
+        });
+        if (response && response.status === 201) {
+          console.log("Rating posted successfully:", response.data);
+          setRatingPostStatus("success");
+        } else {
+          console.error("Error posting rating");
+          setRatingPostStatus("error");
+        }
+      } catch (error) {
+        console.error("Error posting rating:", error);
+        setRatingPostStatus("error");
+      } finally {
+        setLoading(false);
+      }
     }
-
-    setLoading(false);
     setModalVisible(true);
     setTimeout(() => {
       setModalVisible(false);
       navigation.navigate("Home");
-    }, 5000); // 5 seconds to automatically close the modal
+    }, 7000); // 7 seconds to automatically close the modal
   };
 
   const handleFinish = () => {
@@ -153,7 +165,7 @@ const CommentsScreen: React.FC = () => {
                   value={comments}
                   styleProps={{ width: "90%", marginVertical: 3, height: height * 0.2 }}
                   numberOfLines={4}
-                />                
+                />
                 <Button
                   mode="contained"
                   onPress={() => {

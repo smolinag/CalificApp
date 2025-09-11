@@ -474,7 +474,9 @@ const RatingsScreen: React.FC = () => {
                 {"Producto: " + (selectedRatingDetails?.product ? selectedRatingDetails.product : "")}
               </Text>
               <Text style={gstyles.text}>
-                {"Dispositivo: " + (selectedRatingDetails != null && selectedRatingDetails.deviceId)}
+                {"Dispositivo: " +
+                  (selectedRatingDetails != null &&
+                    (selectedRatingDetails.deviceAlias || selectedRatingDetails.deviceId))}
               </Text>
               <Text style={gstyles.text}>
                 {"Tiempo de calificación (s): " +

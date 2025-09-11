@@ -10,4 +10,5 @@ export interface RatingDto {
   createdAt?: string;
   product?: string;
   raterPhone: string;
+  deviceAlias?: string;
 };
