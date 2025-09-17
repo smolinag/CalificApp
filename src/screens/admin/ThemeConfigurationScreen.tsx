@@ -21,6 +21,7 @@ import { Button } from "react-native-paper";
 import { updateCompany } from "../../queries/CompanyQueries";
 import GeneralStatusModal from "../../components/GeneralStatusModal";
 import LoadingAnimation from "../../components/LoadingAnimation";
+import ColorPickerModal from "../../components/ColorPickerModal";
 
 const ThemeConfigurationScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
@@ -35,6 +36,8 @@ const ThemeConfigurationScreen: React.FC = () => {
   const [logoLoadError, setLogoLoadError] = useState(false);
   const [status, setStatus] = useState("");
   const [selectedLogoUrl, setSelectedLogoUrl] = useState<string>(logoUrl);
+  const [colorModalVisible, setColorModalVisible] = useState(false);
+  const [themeElementToChange, setThemeElementToChange] = useState<string>("");
 
   const handleBack = () => {
     navigation.goBack();
@@ -66,7 +69,12 @@ const ThemeConfigurationScreen: React.FC = () => {
       setStatus("Formato de color inválido para el texto. Usa formato HEX, por ejemplo: #RRGGBB o #RGB");
       return;
     }
-    if (!selectedLogoImage && theme.background === backgroundColor && theme.primary === primaryColor && theme.text === textColor) {
+    if (
+      !selectedLogoImage &&
+      theme.background === backgroundColor &&
+      theme.primary === primaryColor &&
+      theme.text === textColor
+    ) {
       setStatus("Success");
       return;
     }
@@ -103,7 +111,12 @@ const ThemeConfigurationScreen: React.FC = () => {
   const validateHexColor = (color: string) => {
     const hexRegex = /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/;
     return hexRegex.test(color);
-  }
+  };
+
+  const handleColorChange = (themeElement: string) => {
+    setColorModalVisible(true);
+    setThemeElementToChange(themeElement);
+  };
 
   return (
     <KeyboardAvoidingView
@@ -137,12 +150,14 @@ const ThemeConfigurationScreen: React.FC = () => {
                     onValueChange={(val) => setBackgroundColor(val)}
                     styleProps={{ width: "80%" }}
                   />
-                  <View
-                    style={[
-                      styles.themeColor,
-                      { backgroundColor: backgroundColor, borderColor: rgbToRgba(theme.text, 0.5) },
-                    ]}
-                  />
+                  <TouchableOpacity onPress={() => handleColorChange("backgroundColor")}>
+                    <View
+                      style={[
+                        styles.themeColor,
+                        { backgroundColor: backgroundColor, borderColor: rgbToRgba(theme.text, 0.5) },
+                      ]}
+                    />
+                  </TouchableOpacity>
                 </View>
                 <View style={styles.themeElement}>
                   <GeneralTextInput
@@ -151,12 +166,14 @@ const ThemeConfigurationScreen: React.FC = () => {
                     onValueChange={(val) => setPrimaryColor(val)}
                     styleProps={{ width: "80%" }}
                   />
-                  <View
-                    style={[
-                      styles.themeColor,
-                      { backgroundColor: primaryColor, borderColor: rgbToRgba(theme.text, 0.5) },
-                    ]}
-                  />
+                  <TouchableOpacity onPress={() => handleColorChange("primaryColor")}>
+                    <View
+                      style={[
+                        styles.themeColor,
+                        { backgroundColor: primaryColor, borderColor: rgbToRgba(theme.text, 0.5) },
+                      ]}
+                    />
+                  </TouchableOpacity>
                 </View>
                 <View style={styles.themeElement}>
                   <GeneralTextInput
@@ -165,9 +182,14 @@ const ThemeConfigurationScreen: React.FC = () => {
                     onValueChange={(val) => setTextColor(val)}
                     styleProps={{ width: "80%" }}
                   />
-                  <View
-                    style={[styles.themeColor, { backgroundColor: textColor, borderColor: rgbToRgba(theme.text, 0.5) }]}
-                  />
+                  <TouchableOpacity onPress={() => handleColorChange("textColor")}>
+                    <View
+                      style={[
+                        styles.themeColor,
+                        { backgroundColor: textColor, borderColor: rgbToRgba(theme.text, 0.5) },
+                      ]}
+                    />
+                  </TouchableOpacity>
                 </View>
               </View>
               <View style={styles.logoContainer}>
@@ -175,7 +197,9 @@ const ThemeConfigurationScreen: React.FC = () => {
                 <TouchableOpacity onPress={handlePickImage}>
                   <Image
                     source={
-                      selectedLogoUrl === null || logoLoadError ? require("../../../assets/Unknown.jpg") : { uri: selectedLogoUrl }
+                      selectedLogoUrl === null || logoLoadError
+                        ? require("../../../assets/Unknown.jpg")
+                        : { uri: selectedLogoUrl }
                     }
                     style={{ width: height * 0.5, height: height * 0.5, borderWidth: 1, borderColor: theme.text }}
                     resizeMode="contain"
@@ -198,17 +222,41 @@ const ThemeConfigurationScreen: React.FC = () => {
         </View>
         <GeneralStatusModal
           isVisible={status !== ""}
-          message={
-            status === "Success"
-              ? "Tema y Apariencia actualizados exitosamente"
-              : status
-          }
+          message={status === "Success" ? "Tema y Apariencia actualizados exitosamente" : status}
           button1Text="Aceptar"
-          onPress1={() => {            
+          onPress1={() => {
             setStatus("");
             status === "Success" ? navigation.goBack() : null;
           }}
           status={status === "Success" ? "success" : "error"}
+        />
+        <ColorPickerModal
+          title={
+            themeElementToChange === "backgroundColor"
+              ? "Color del Fondo"
+              : themeElementToChange === "primaryColor"
+              ? "Color Principal"
+              : "Color del Texto"
+          }
+          visible={colorModalVisible}
+          onClose={() => setColorModalVisible(false)}
+          value={
+            themeElementToChange === "backgroundColor"
+              ? backgroundColor
+              : themeElementToChange === "primaryColor"
+              ? primaryColor
+              : textColor
+          }
+          onValueSelect={(color) => {
+            if (themeElementToChange === "backgroundColor") {
+              setBackgroundColor(color);
+            } else if (themeElementToChange === "primaryColor") {
+              setPrimaryColor(color);
+            } else if (themeElementToChange === "textColor") {
+              setTextColor(color);
+            }
+            setColorModalVisible(false);
+          }}
         />
       </ScrollView>
     </KeyboardAvoidingView>

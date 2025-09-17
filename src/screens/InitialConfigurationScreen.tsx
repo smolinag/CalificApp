@@ -9,9 +9,10 @@ import { getGeneralStyles } from "../styles/GeneralStyle";
 import { useTheme } from "../context/ThemeContext";
 import GeneralTextInput from "../components/GeneralTextInput";
 import { getCompany } from "../queries/CompanyQueries";
-import { getDevice } from "../queries/DeviceQueries";
+import { getDevice, updateDevice } from "../queries/DeviceQueries";
 import GeneralStatusModal from "../components/GeneralStatusModal";
 import LoadingAnimation from "../components/LoadingAnimation";
+import { DeviceDto } from "../models/DeviceDto";
 
 const CONFIG_CONSTANTS = {
   PIN_LENGTH: 4,
@@ -58,11 +59,18 @@ const InitialConfigurationScreen: React.FC = () => {
         console.log("Existing company:", existingCompany.data);
         if (existingCompany.data) {
           //Check if device exists
-          const existingDevice = await getDevice(deviceId);
-          if (!existingDevice.data) {
+          const deviceResponse = await getDevice(deviceId);
+          if (!deviceResponse.data) {
             setErrorMessage("El dispositivo ingresado no existe. Por favor, verifica el ID e inténtalo de nuevo.");
           } else {
+            const existingDevice: DeviceDto = deviceResponse.data;
+            if(existingDevice.status === "active") {
+              setErrorMessage("El dispositivo ya está activo. Por favor, utiliza otro ID de dispositivo.");
+              setIsLoading(false);
+              return;
+            }
             await saveConfiguration(companyName, deviceId, pin, deviceAlias);
+            await updateDevice({ ...existingDevice, status: "active", deviceAlias: deviceAlias });
             reloadTheme();
             navigation.navigate("Home");
           }
