@@ -54,7 +54,7 @@ export const getGeneralStyles = (theme: Theme) => {
     },
     fixedCalificappLogoContainer: {
       position: "absolute",
-      bottom: height * 0.04,
+      bottom: height * 0.08,
       left: 10,
       zIndex: 10,
     },

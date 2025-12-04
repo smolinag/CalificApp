@@ -117,7 +117,7 @@ const PhotoSelectionScreen: React.FC = () => {
       <View style={gstyles.fixedCalificappLogoContainer}>
         {logoUrl && (
           <Image
-            source={require("../../assets/CalificAppLogo_borderW.png")} // update path as needed
+            source={require("../../assets/CalificAppLogo2.png")} // update path as needed
             style={gstyles.calificappLogoImage}
             resizeMode="contain"
           />
