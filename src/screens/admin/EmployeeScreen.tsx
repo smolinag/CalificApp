@@ -12,12 +12,15 @@ import { ConfigProperties } from "../../utils/ConfigProperties";
 import { createEmployee, deleteEmployee, updateEmployee } from "../../queries/EmployeeQueries";
 import GeneralStatusModal from "../../components/GeneralStatusModal";
 import { useTheme } from "../../context/ThemeContext";
+import * as ImageManipulator from 'expo-image-manipulator';
 
 type ParamList = {
   EmployeeScreen: {
     employee: EmployeeDto;
   };
 };
+
+const RESIZE_HEIGHT = 500;
 
 const EmployeeScreen: React.FC = () => {
   const route = useRoute<RouteProp<ParamList, "EmployeeScreen">>();
@@ -49,9 +52,32 @@ const EmployeeScreen: React.FC = () => {
       base64: true,
     });
     if (!result.canceled && result.assets && result.assets.length > 0) {
-      setImageUrl(result.assets[0].uri);
-      setSelectedImage(result.assets[0]);
-    }
+    // Get original image dimensions
+    const { width, height } = await new Promise<{ width: number; height: number }>((resolve) => {
+      Image.getSize(result.assets[0].uri, (w, h) => {
+        resolve({ width: w, height: h });
+      });
+    });
+
+    // Calculate new width maintaining aspect ratio
+    const newWidth = Math.round((width * RESIZE_HEIGHT) / height);
+
+    // Resize image
+    const manipulatedImage = await ImageManipulator.manipulateAsync(
+      result.assets[0].uri,
+      [{ resize: { width: newWidth, height: RESIZE_HEIGHT } }],
+      { compress: 1, format: ImageManipulator.SaveFormat.PNG, base64: true }
+    );
+
+    setImageUrl(manipulatedImage.uri);
+    setSelectedImage({
+      ...result.assets[0],
+      uri: manipulatedImage.uri,
+      base64: manipulatedImage.base64,
+      width: newWidth,
+      height: RESIZE_HEIGHT,
+    });
+  }
   };
 
   const handleBack = () => {
@@ -60,7 +86,6 @@ const EmployeeScreen: React.FC = () => {
 
   const extractFileExtension = (uri: string): string => {
     const match = uri.match(/\.([0-9a-z]+)$/i);
-    console.log("Extracted file extension:", match ? match[1] : "none");
     return match ? match[1] : "";
   };
 
