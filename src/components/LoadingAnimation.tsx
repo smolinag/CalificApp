@@ -13,7 +13,7 @@ const LoadingAnimation: React.FC<LoadingAnimationProps> = ({ message }) => {
   const gstyles = getGeneralStyles(theme);
 
   return (
-    <View style={{ height: "100%", top: "30%" }}>
+    <View style={{ height: "90%", top: "30%" }}>
       <Text style={gstyles.subtitle}>{message}</Text>
       <ActivityIndicator animating={true} size={width * 0.17} color={theme.primary} style={{marginTop:"3%"}}/>
     </View>

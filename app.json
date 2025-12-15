@@ -2,7 +2,7 @@
   "expo": {
     "name": "CalificApp",
     "slug": "CalificApp",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "orientation": "landscape",
     "icon": "./assets/CalificAppIcon.png",
     "userInterfaceStyle": "light",

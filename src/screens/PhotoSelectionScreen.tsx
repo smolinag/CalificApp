@@ -4,6 +4,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { ParamListBase, useFocusEffect, useNavigation } from "@react-navigation/native";
 import { Button, Icon } from "react-native-paper";
 import * as SecureStore from "expo-secure-store";
+import * as Battery from "expo-battery";
 
 import { getEmployees } from "../queries/EmployeeQueries";
 import { getGeneralStyles } from "../styles/GeneralStyle";
@@ -21,6 +22,8 @@ const PhotoSelectionScreen: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [inputPassword, setInputPassword] = useState("");
   const [pinError, setPinError] = useState(false);
+  const [batteryLevel, setBatteryLevel] = useState<number | null>(null);
+  const [isCharging, setIsCharging] = useState(false);
 
   const { theme, logoUrl } = useTheme();
   const gstyles = getGeneralStyles(theme);
@@ -65,6 +68,33 @@ const PhotoSelectionScreen: React.FC = () => {
     }, []) 
   );
 
+  useEffect(() => {
+    const updateBatteryLevel = async () => {
+      const level = await Battery.getBatteryLevelAsync();
+      const state = await Battery.getBatteryStateAsync();
+      setBatteryLevel(Math.round(level * 100));
+      setIsCharging(state === Battery.BatteryState.CHARGING);
+    };
+
+    updateBatteryLevel();
+    
+    // Poll battery level every 30 seconds as fallback
+    const interval = setInterval(updateBatteryLevel, 30000);
+    
+    const levelSubscription = Battery.addBatteryLevelListener((status) => {
+      setBatteryLevel(Math.round(status.batteryLevel * 100));
+    });
+    const stateSubscription = Battery.addBatteryStateListener((status) => {
+      setIsCharging(status.batteryState === Battery.BatteryState.CHARGING);
+    });
+
+    return () => {
+      clearInterval(interval);
+      levelSubscription.remove();
+      stateSubscription.remove();
+    };
+  }, []);
+
   const handlePinSubmit = async () => {
     const pin = await SecureStore.getItemAsync("pin");
     if (pin === inputPassword) {
@@ -89,13 +119,39 @@ const PhotoSelectionScreen: React.FC = () => {
     navigation.navigate("Rating", { ratingInfo: employee });
   };
 
+  const getBatteryIcon = () => {
+    if (isCharging) {
+      return "battery-charging";
+    }
+    if (batteryLevel === null) {
+      return "battery-unknown";
+    }
+    if (batteryLevel <= 20) {
+      return "battery-20";
+    }
+    if (batteryLevel <= 50) {
+      return "battery-50";
+    }
+    if (batteryLevel <= 80) {
+      return "battery-80";
+    }
+    return "battery";
+  };
+
   return (
     <View style={gstyles.container}>
+      <View style={styles.fixedBatteryContainer}>
+        <Icon source={getBatteryIcon()} size={24} color={theme.primary} />
+        <Text style={[gstyles.text, { fontSize: 16, marginLeft: 5 }]}>
+          {batteryLevel !== null ? `${batteryLevel}%` : "--"}
+        </Text>
+      </View>
       <View style={[styles.fixedSettingsContainer, { borderColor: rgbToRgba(theme.primary, 0.5) }]}>
         <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Icon source="cog-outline" size={30} color={theme.primary} />
         </TouchableOpacity>
       </View>
+
       <Text style={gstyles.title}>{"Califica nuestro servicio"}</Text>
       {loading ? (
         <LoadingAnimation message="Cargando empleados..." />
@@ -176,6 +232,15 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     marginHorizontal: 10,
+  },
+  fixedBatteryContainer: {
+    position: "absolute",
+    top: 30,
+    left: 30,
+    zIndex: 10,
+    padding: 8,
+    flexDirection: "row",
+    alignItems: "center",
   },
   fixedSettingsContainer: {
     position: "absolute",

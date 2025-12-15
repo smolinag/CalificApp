@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Image } from "react-native";
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Image, BackHandler } from "react-native";
 import { Button, Icon } from "react-native-paper";
 import * as SecureStore from "expo-secure-store";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
@@ -47,6 +47,10 @@ const ConfigurationScreen: React.FC = () => {
     navigation.navigate("Theme");
   };
 
+  const handleExit = () => {
+    BackHandler.exitApp();
+  };
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -82,7 +86,7 @@ const ConfigurationScreen: React.FC = () => {
                 onPress={() => {
                   handleShowRatings();
                 }}
-                style={[gstyles.generalButton, { marginTop: 10 }]}
+                style={[gstyles.generalButton, styles.fixedWidthButton, { marginTop: 10 }]}
                 labelStyle={gstyles.generalButtonLabel}
               >
                 {"Calificaciones"}
@@ -92,7 +96,7 @@ const ConfigurationScreen: React.FC = () => {
                 onPress={() => {
                   handleShowEmployees();
                 }}
-                style={[gstyles.generalButton, { marginTop: 10 }]}
+                style={[gstyles.generalButton, styles.fixedWidthButton, { marginTop: 10 }]}
                 labelStyle={gstyles.generalButtonLabel}
               >
                 {"Empleados"}
@@ -102,7 +106,7 @@ const ConfigurationScreen: React.FC = () => {
                 onPress={() => {
                   handleTheme();
                 }}
-                style={[gstyles.generalButton, { marginTop: 10 }]}
+                style={[gstyles.generalButton, styles.fixedWidthButton, { marginTop: 10 }]}
                 labelStyle={gstyles.generalButtonLabel}
               >
                 {"Apariencia"}
@@ -112,10 +116,19 @@ const ConfigurationScreen: React.FC = () => {
                 onPress={() => {
                   handleResetApp();
                 }}
-                style={[gstyles.generalButton, { marginTop: 10 }]}
+                style={[gstyles.generalButton, styles.fixedWidthButton, { marginTop: 10 }]}
                 labelStyle={gstyles.generalButtonLabel}
               >
                 {"Reset App"}
+              </Button>
+              <Button
+                mode="contained"
+                onPress={handleExit}
+                icon="exit-to-app"
+                style={[gstyles.generalButton, styles.fixedWidthButton, { marginTop: 10 }]}
+                labelStyle={gstyles.generalButtonLabel}
+              >
+                {"Salir"}
               </Button>
               <Text style={gstyles.text}>{"Versión: " + appVersion}</Text>
             </View>
@@ -160,6 +173,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
+  },
+  fixedWidthButton: {
+    width: 250,
+    alignSelf: "center",
   },
 });
 
