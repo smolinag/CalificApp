@@ -8,9 +8,13 @@ export const getEmployees = async (companyName: string): Promise<AxiosResponse |
   try {
     const response = await axios.get(ConfigProperties.serverUrl + employeesPath + "s", {
       params: { id: companyName },
+      timeout: 10000, // 10 second timeout
     });
     return response;
   } catch (error) {
+    if (axios.isAxiosError(error) && (error.code === 'ECONNABORTED' || error.message.includes('timeout'))) {
+      throw new Error('Network timeout: Unable to connect to server. Please check your internet connection.');
+    }
     console.log(error);
     return null;
   }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
-import * as FileSystem from "expo-file-system";
+import { Paths, File } from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import { getRatings } from "../../queries/RatingQueries";
 import { RatingDto } from "../../models/RatingDto";
@@ -212,21 +212,37 @@ const RatingsScreen: React.FC = () => {
 
     const csv = [headers, ...rows].map((row) => row.map(escape).join(",")).join("\r\n");
 
-    // Write file to app's cache dir
-    const fileUri = FileSystem.cacheDirectory + filename;
-    await FileSystem.writeAsStringAsync(fileUri, "\uFEFF" + csv, {
-      encoding: FileSystem.EncodingType.UTF8,
-    });
+    try {
+      // Write file to app's cache dir using new API
+      // Add timestamp to make filename unique
+      const timestamp = Date.now();
+      const baseName = filename.replace(".csv", "");
+      const uniqueFilename = `${baseName}_${timestamp}.csv`;
+      
+      const file = new File(Paths.cache, uniqueFilename);
+      file.create();
+      file.write("\uFEFF" + csv, { encoding: "utf8" });
 
-    // Share using system share dialog
-    if (await Sharing.isAvailableAsync()) {
-      await Sharing.shareAsync(fileUri);
-    } else {
-      alert("Sharing not available on this device");
+      console.log("CSV file created at:", file.uri);
+
+      // Share using system share dialog
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(file.uri, {
+          mimeType: "text/csv",
+          dialogTitle: "Save CSV File",
+          UTI: "public.comma-separated-values-text",
+        });
+      } else {
+        alert("Sharing not available on this device");
+      }
+    } catch (error) {
+      console.error("Error creating/sharing CSV:", error);
+      alert("Error creating CSV file: " + error.message);
     }
   };
 
   const handleDownload = () => {
+    console.log("Downloading ratings CSV for:", { year, month, selectedEmployee });
     downloadRatingsCsv(filteredRatings, `ratings_${year}_${String(month).padStart(2, "0")}_.csv`);
   };
 

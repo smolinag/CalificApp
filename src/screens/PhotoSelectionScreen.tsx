@@ -32,19 +32,25 @@ const PhotoSelectionScreen: React.FC = () => {
     const companyName = await SecureStore.getItemAsync("companyName");
     console.log(theme)
     setLoading(true);
-    const response = await getEmployees(companyName);
-    if (response && response.data) {
-      const employeeData: RatingInfo[] = response.data.map((employee: any) => ({
-        employeeName: employee.employeeName,
-        photoUrl: employee.photoUrl,
-        ratingStartedAt: undefined,
-        version: employee.version,
-      }));
-      console.log("Fetched employees: " + employeeData.length);
-      setEmployees(employeeData);
+    try {
+      const response = await getEmployees(companyName);
+      if (response && response.data) {
+        const employeeData: RatingInfo[] = response.data.map((employee: any) => ({
+          employeeName: employee.employeeName,
+          photoUrl: employee.photoUrl,
+          ratingStartedAt: undefined,
+          version: employee.version,
+        }));
+        console.log("Fetched employees: " + employeeData.length);
+        setEmployees(employeeData);
+        setLoading(false);
+      } else {
+        console.error("Failed to fetch employees", response);
+        setLoading(false);
+      }
+    } catch (error) {
       setLoading(false);
-    } else {
-      console.error("Failed to fetch employees", response);
+      alert(error.message || "Network error: Unable to load employees");
     }
   };
 
