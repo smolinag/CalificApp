@@ -62,22 +62,10 @@ const RatingScreen: React.FC = () => {
           <Icon source="emoticon-angry" size={width * 0.085} color={Colors.rating1} />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => handleRating(2)}
-          style={[styles.ratingButton, { backgroundColor: theme.background, borderColor: rgbToRgba(theme.text, 0.3) }]}
-        >
-          <Icon source="emoticon-sad" size={width * 0.085} color={Colors.rating2} />
-        </TouchableOpacity>
-        <TouchableOpacity
           onPress={() => handleRating(3)}
           style={[styles.ratingButton, { backgroundColor: theme.background, borderColor: rgbToRgba(theme.text, 0.3) }]}
         >
           <Icon source="emoticon-neutral" size={width * 0.085} color={Colors.rating3} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => handleRating(4)}
-          style={[styles.ratingButton, { backgroundColor: theme.background, borderColor: rgbToRgba(theme.text, 0.3) }]}
-        >
-          <Icon source="emoticon-happy" size={width * 0.085} color={Colors.rating4} />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => handleRating(5)}

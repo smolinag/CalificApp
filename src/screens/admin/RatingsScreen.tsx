@@ -152,12 +152,23 @@ const RatingsScreen: React.FC = () => {
       employeeRatings[r.employeeName].total += r.rating;
       employeeRatings[r.employeeName].count += 1;
     });
+
+    // Progressive fallback: try threshold of 5, then 3, then 1
+    let eligible = Object.entries(employeeRatings).filter(([_, data]) => data.count >= 5);
+    if (eligible.length === 0) {
+      eligible = Object.entries(employeeRatings).filter(([_, data]) => data.count >= 3);
+    }
+    if (eligible.length === 0) {
+      eligible = Object.entries(employeeRatings).filter(([_, data]) => data.count >= 1);
+    }
+
     let bestEmployee = null;
     let bestAverage = 0;
     let worstEmployee = null;
     let worstAverage = Infinity;
-    for (const emp in employeeRatings) {
-      const avg = employeeRatings[emp].total / employeeRatings[emp].count;
+
+    for (const [emp, data] of eligible) {
+      const avg = data.total / data.count;
       if (avg > bestAverage) {
         bestAverage = avg;
         bestEmployee = emp;
@@ -167,10 +178,11 @@ const RatingsScreen: React.FC = () => {
         worstEmployee = emp;
       }
     }
+
     let bestEmp = employees.find((e) => e.employeeName === bestEmployee);
     let worstEmp = employees.find((e) => e.employeeName === worstEmployee);
-    bestEmp.rating = bestAverage;
-    worstEmp.rating = worstAverage;
+    if (bestEmp) bestEmp.rating = bestAverage;
+    if (worstEmp) worstEmp.rating = worstAverage;
     setWorstEmployee(worstEmp);
     setBestEmployee(bestEmp);
   };
