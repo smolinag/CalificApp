@@ -55,24 +55,33 @@ const RatingScreen: React.FC = () => {
         </View>
       </View>
       <View style={styles.ratingScaleContainer}>
-        <TouchableOpacity
-          onPress={() => handleRating(1)}
-          style={[styles.ratingButton, { backgroundColor: theme.background, borderColor: rgbToRgba(theme.text, 0.3) }]}
-        >
-          <Icon source="emoticon-angry" size={width * 0.085} color={Colors.rating1} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => handleRating(3)}
-          style={[styles.ratingButton, { backgroundColor: theme.background, borderColor: rgbToRgba(theme.text, 0.3) }]}
-        >
-          <Icon source="emoticon-neutral" size={width * 0.085} color={Colors.rating3} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => handleRating(5)}
-          style={[styles.ratingButton, { backgroundColor: theme.background, borderColor: rgbToRgba(theme.text, 0.3) }]}
-        >
-          <Icon source="emoticon-excited" size={width * 0.085} color={Colors.rating5} />
-        </TouchableOpacity>
+        <View style={styles.ratingItem}>
+          <TouchableOpacity
+            onPress={() => handleRating(1)}
+            style={[styles.ratingButton, { backgroundColor: theme.background, borderColor: rgbToRgba(theme.text, 0.3) }]}
+          >
+            <Icon source="emoticon-angry" size={width * 0.085} color={Colors.rating1} />
+          </TouchableOpacity>
+          <Text style={[styles.ratingLabel, { color: Colors.rating1 }]}>Malo</Text>
+        </View>
+        <View style={styles.ratingItem}>
+          <TouchableOpacity
+            onPress={() => handleRating(3)}
+            style={[styles.ratingButton, { backgroundColor: theme.background, borderColor: rgbToRgba(theme.text, 0.3) }]}
+          >
+            <Icon source="emoticon-neutral" size={width * 0.085} color={Colors.rating3} />
+          </TouchableOpacity>
+          <Text style={[styles.ratingLabel, { color: Colors.rating3 }]}>Regular</Text>
+        </View>
+        <View style={styles.ratingItem}>
+          <TouchableOpacity
+            onPress={() => handleRating(5)}
+            style={[styles.ratingButton, { backgroundColor: theme.background, borderColor: rgbToRgba(theme.text, 0.3) }]}
+          >
+            <Icon source="emoticon-excited" size={width * 0.085} color={Colors.rating5} />
+          </TouchableOpacity>
+          <Text style={[styles.ratingLabel, { color: Colors.rating5 }]}>Excelente</Text>
+        </View>
       </View>
       <View style={gstyles.fixedLogoContainer}>
         {logoUrl && (
@@ -97,12 +106,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 10,
   },
-  ratingButton: {
+  ratingItem: {
+    alignItems: "center",
     marginHorizontal: width * 0.01,
-    borderRadius: 200, // Optional: make it round
+  },
+  ratingButton: {
+    borderRadius: 200,
     shadowOpacity: 0.3,
-    elevation: 15, // Increase elevation for Android
+    elevation: 15,
     borderWidth: 1,
+  },
+  ratingLabel: {
+    fontSize: width * 0.018,
+    fontWeight: "bold",
+    marginTop: 2,
   },
 });
 
