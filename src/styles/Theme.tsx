@@ -1,7 +1,7 @@
 export const Colors = {
-  rating5: "#2ac42f",
-  rating4: "rgb(113, 172, 46)",
-  rating3: "#ddc01b",
-  rating2: "rgb(206, 82, 33)",
-  rating1: "#b60808",
+  rating5: "#29d82f",
+  rating4: "rgb(128, 212, 32)",
+  rating3: "#ecdf26",
+  rating2: "rgb(228, 134, 27)",
+  rating1: "#e00f0f",
 }

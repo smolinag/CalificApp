@@ -1,6 +1,12 @@
 import React from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
-import { Button, Icon } from "react-native-paper";
+import { Button } from "react-native-paper";
+
+const emojiMuyMalo = require("../../assets/MuyMalo.png");
+const emojiMalo = require("../../assets/Malo.png");
+const emojiRegular = require("../../assets/Regular.png");
+const emojiBueno = require("../../assets/Bueno.png");
+const emojiExcelente = require("../../assets/Excelente.png");
 import { getGeneralStyles, width } from "../styles/GeneralStyle";
 import { RatingInfo } from "../models/RatingInfo";
 import { ParamListBase, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
@@ -60,25 +66,43 @@ const RatingScreen: React.FC = () => {
             onPress={() => handleRating(1)}
             style={[styles.ratingButton, { backgroundColor: theme.background, borderColor: rgbToRgba(theme.text, 0.3) }]}
           >
-            <Icon source="emoticon-angry" size={width * 0.085} color={Colors.rating1} />
+            <Image source={emojiMuyMalo} style={styles.emojiImage} resizeMode="contain" />
           </TouchableOpacity>
-          <Text style={[styles.ratingLabel, { color: Colors.rating1 }]}>Malo</Text>
+          <Text style={[styles.ratingLabel, { color: Colors.rating1 }]}>Muy Malo</Text>
+        </View>
+        <View style={styles.ratingItem}>
+          <TouchableOpacity
+            onPress={() => handleRating(2)}
+            style={[styles.ratingButton, { backgroundColor: theme.background, borderColor: rgbToRgba(theme.text, 0.3) }]}
+          >
+            <Image source={emojiMalo} style={styles.emojiImage} resizeMode="contain" />
+          </TouchableOpacity>
+          <Text style={[styles.ratingLabel, { color: Colors.rating2 }]}>Malo</Text>
         </View>
         <View style={styles.ratingItem}>
           <TouchableOpacity
             onPress={() => handleRating(3)}
             style={[styles.ratingButton, { backgroundColor: theme.background, borderColor: rgbToRgba(theme.text, 0.3) }]}
           >
-            <Icon source="emoticon-neutral" size={width * 0.085} color={Colors.rating3} />
+            <Image source={emojiRegular} style={styles.emojiImage} resizeMode="contain" />
           </TouchableOpacity>
           <Text style={[styles.ratingLabel, { color: Colors.rating3 }]}>Regular</Text>
+        </View>
+        <View style={styles.ratingItem}>
+          <TouchableOpacity
+            onPress={() => handleRating(4)}
+            style={[styles.ratingButton, { backgroundColor: theme.background, borderColor: rgbToRgba(theme.text, 0.3) }]}
+          >
+            <Image source={emojiBueno} style={styles.emojiImage} resizeMode="contain" />
+          </TouchableOpacity>
+          <Text style={[styles.ratingLabel, { color: Colors.rating4 }]}>Bueno</Text>
         </View>
         <View style={styles.ratingItem}>
           <TouchableOpacity
             onPress={() => handleRating(5)}
             style={[styles.ratingButton, { backgroundColor: theme.background, borderColor: rgbToRgba(theme.text, 0.3) }]}
           >
-            <Icon source="emoticon-excited" size={width * 0.085} color={Colors.rating5} />
+            <Image source={emojiExcelente} style={styles.emojiImage} resizeMode="contain" />
           </TouchableOpacity>
           <Text style={[styles.ratingLabel, { color: Colors.rating5 }]}>Excelente</Text>
         </View>
@@ -115,6 +139,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     elevation: 15,
     borderWidth: 1,
+  },
+  emojiImage: {
+    width: width * 0.085,
+    height: width * 0.085,
   },
   ratingLabel: {
     fontSize: width * 0.018,
